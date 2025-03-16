@@ -7,7 +7,7 @@ export const Layout = () => {
         
            <div className="flex justify-center min-h-screen min-w-screen bg-[#15202B]">
             <Nav />
-            <main className="w-[500px] ring-1 ring-slate-700">
+            <main className="w-[600px] ring-1 ring-slate-700">
             <Outlet />
             </main>
             <Footer />

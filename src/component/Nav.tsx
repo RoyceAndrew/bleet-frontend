@@ -9,10 +9,26 @@ export const Nav = () => {
   const logOut = useUser((state: any) => state.logout);
   const user = useUser((state: any) => state.user);
   const [fill, setFill] = useState(location);
+  const [dot, setDot] = useState('');
+  const [userdot, setUserDot] = useState('');
 
   useEffect(() => {
     setFill(location);
   }, [location]);
+
+  useEffect(() => {
+    if (user.displayname.length > 9) {
+      setDot('...')
+    } else {
+      setDot('')
+    }
+    if (user.username.length > 9) {
+      setUserDot('...')
+    } else {
+      setUserDot('')
+    }
+    
+  }, [user]);
 
   return (
     <header className="flex md:w-[250px] md:mr-4 ml-2 mr-1 flex-col items-end md:items-start justify-between">
@@ -54,8 +70,8 @@ export const Nav = () => {
             className="w-[40px] h-[40px] rounded-full object-cover"
           />
           <div className="ml-2">
-            <p className="text-white font-bold hidden md:block">{user.displayname}</p>
-            <p className=" text-slate-400 text-sm hidden md:block">@{user.username}</p>
+            <p className="text-white font-bold hidden md:block">{user.displayname.slice(0, 10) + dot}</p>
+            <p className=" text-slate-400 text-sm hidden md:block">@{user.username.slice(0, 10) + userdot}</p>
           </div>
         </div>
 
