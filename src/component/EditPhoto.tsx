@@ -84,7 +84,7 @@ export const EditPhoto = (props: EditPhotoProps) => {
             <i className="bi mr-4 text-white bi-zoom-out"></i>
             <Slider
               onChange={handleChange}
-              defaultValue={30}
+              defaultValue={1}
               min={1}
               max={5}
               step={0.1}
