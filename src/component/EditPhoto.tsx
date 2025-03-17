@@ -50,8 +50,8 @@ export const EditPhoto = (props: EditPhotoProps) => {
         className="fixed z-[100] w-screen h-screen bg-[#FFFFFF50] flex justify-center items-center"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col">
-          <div className="bg-[#15202B] items-center rounded-t-lg py-1 px-2 flex justify-between">
+        <div className="flex flex-col h-screen w-screen sm:h-auto sm:w-auto">
+          <div className="bg-[#15202B]  sm:h-auto items-end  sm:items-center rounded-t-lg py-1 px-2 flex justify-between">
             <div className="flex items-center">
               <i
                 onClick={handleBack}
@@ -66,7 +66,7 @@ export const EditPhoto = (props: EditPhotoProps) => {
               Apply
             </button>
           </div>
-          <div className="relative w-[500px] h-[400px]">
+          <div className="relative h-full  bg-slate-800 w-full sm:w-[500px] sm:h-[400px]">
             {props.image && (
               <Cropper
                 image={props.image}
@@ -80,7 +80,7 @@ export const EditPhoto = (props: EditPhotoProps) => {
               />
             )}
           </div>
-          <div className="flex bg-[#15202B] rounded-b-lg py-1 px-15">
+          <div className="flex h-full sm:h-auto bg-[#15202B] rounded-b-lg py-1 px-15">
             <i className="bi mr-4 text-white bi-zoom-out"></i>
             <Slider
               onChange={handleChange}

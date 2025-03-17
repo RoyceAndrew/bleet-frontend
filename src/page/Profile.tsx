@@ -7,6 +7,7 @@ import { useEditProfile } from "../hook/useEditProfile";
 import { BeatLoader } from "react-spinners";
 import { EditPhoto } from "../component/EditPhoto";
 import { useUpload } from "../hook/useUpload";
+import { ProfilePost } from "../component/ProfilePost";
 
 interface userType {
   displayname: string;
@@ -332,6 +333,7 @@ export const Profile = () => {
           />
         )}
       </div>
+      <ProfilePost/>
     </section>
   );
 };
