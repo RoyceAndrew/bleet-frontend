@@ -1,6 +1,6 @@
 export const Footer = () => {
     return (
-        <footer className="lg:flex flex-col hidden w-[250px] h-screen ml-4 pt-4 bg-[#15202B] text-white">
+        <footer className="lg:flex flex-col hidden w-[250px] sticky top-0 h-screen ml-4 pt-4 bg-[#15202B] text-white">
             <div className="ring-1 ring-slate-700 p-2 rounded-lg">
                 <h2 className="text-2xl font-bold">Recent Posts</h2>
             </div>

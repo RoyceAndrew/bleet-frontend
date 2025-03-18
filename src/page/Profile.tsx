@@ -141,12 +141,12 @@ export const Profile = () => {
       <img
         src={user.banner}
         alt="banner"
-        className="w-full z-0 relative h-[200px] object-cover"
+        className="w-full relative z-0  h-[200px] object-cover"
       />
       <img
         src={user.profilePicture}
         alt="profile"
-        className="rounded-full relative w-[130px] ml-[15px] z-20 ring-4 ring-[#15202B] mt-[-65px] h-[130px] object-cover"
+        className="rounded-full relative  w-[130px] ml-[15px] z-20 ring-4 ring-[#15202B] mt-[-65px] h-[130px] object-cover"
       />
       <button
         onClick={() => setOpen(true)}

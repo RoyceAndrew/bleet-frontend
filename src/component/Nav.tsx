@@ -5,6 +5,7 @@ import { useUser } from "../hook/useUser";
 import { TextareaAutosize, CircularProgress } from "@mui/material";
 import { usePost } from "../hook/usePost";
 import { BeatLoader } from "react-spinners";
+import { useProfilePost } from "../hook/useProfilePost";
 
 export const Nav = () => {
   const location = useLocation().pathname;
@@ -17,6 +18,7 @@ export const Nav = () => {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
+  const getData = useProfilePost((state: any) => state.getProfilePosts)
 
   useEffect(() => {
     setFill(location);
@@ -48,13 +50,14 @@ export const Nav = () => {
        setLoading(false);
        return
      }
+     getData()
      setOpen(false);
      setText('');
      setLoading(false);
   }
 
   return (
-    <header className="flex md:w-[250px] md:mr-4 ml-2 mr-1 flex-col items-end md:items-start justify-between">
+    <header className="flex md:w-[250px] h-screen sticky z-50 top-0 bottom-0 md:mr-4 ml-2 mr-1 flex-col items-end md:items-start justify-between">
       <nav className="w-full flex flex-col items-end md:items-start">
         <img src="/pct/bleetlogo.png" alt="bleet-logo" className="h-[40px] mr-1 md:mr-0" />
         <NavRoute
@@ -93,7 +96,7 @@ export const Nav = () => {
 
             </div>
             <div className="flex">
-            <CircularProgress variant="determinate" size={25} value={text.length * 100 / 280 } color={text.length * 100 / 280 === 100 ? "error" : "primary"}/>
+            <CircularProgress variant="determinate" size={25} value={Math.round(text.length * 100 / 280 )} color={text.length * 100 / 280 === 100 ? "error" : "primary"}/>
             <button disabled={loading} type="submit" className="py-0.5 ml-3 px-3.5  rounded-2xl flex items-center justify-center bg-white text-black transition-colors duration-300 ease-out text-md hover:bg-slate-400 rounded-full[35px] cursor-pointer">{loading ? <BeatLoader color="black" size={8} /> : "Post"}</button>
             </div>
           </div>
@@ -103,7 +106,7 @@ export const Nav = () => {
       </nav>
       <div
         onClick={() => setIsOpen(true)}
-        className="p-1.5  w-[55px]  md:mr-0 h-[60px] rounded-3xl cursor-pointer hover:bg-slate-700 mb-4 flex justify-between md:w-full items-center"
+        className="p-1.5  w-[55px]  md:mr-0 h-[60px] rounded-full cursor-pointer hover:bg-slate-700 mb-4 flex justify-between md:w-full items-center"
       >
         <div className="flex">
           <img
@@ -132,7 +135,7 @@ export const Nav = () => {
         onClick={() => setIsOpen(false)}
         className={`${
           isOpen ? "block" : "hidden"
-        } absolute z-10 cursor-default top-0 left-0 w-screen h-screen bg-transparent`}
+        } fixed z-10 cursor-default top-0 left-0 w-screen h-screen bg-transparent`}
       ></div>
     </header>
   );
