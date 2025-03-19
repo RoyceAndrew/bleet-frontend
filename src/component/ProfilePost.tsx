@@ -4,20 +4,25 @@ import { useUser } from "../hook/useUser";
 import { BeatLoader } from "react-spinners";
 import { useState } from "react";
 import { formatDistance } from "date-fns";
+import useGetPosts from "../hook/useGetPosts";
 
-export const ProfilePost = () => {
-  const getData = useProfilePost((state: any) => state.getProfilePosts);
-  const loading = useProfilePost((state: any) => state.isLoading);
-  const posts = useProfilePost((state: any) => state.posts);
+interface Props {
+  posts: any;
+  getData: any;
+  loading: any;
+}
+
+export const ProfilePost = (props: Props) => {
   const user = useUser((state: any) => state.user);
   const deletePost = useProfilePost((state: any) => state.deleteProfilePost);
   const [open, setOpen] = useState<number | null>(null);
+  const deletePosts = useGetPosts((state: any) => state.deletePost);
 
   useEffect(() => {
-    getData();
+    props.getData();
   }, [user]);
 
-  if (loading) {
+  if (props.loading) {
     return (
       <div className="w-full h-full flex justify-center items-center">
         <BeatLoader color="white" />
@@ -27,6 +32,7 @@ export const ProfilePost = () => {
 
   function handleDelete(id: string) {
     deletePost({ postId: id });
+    deletePosts({ postId: id });
     setOpen(null);
   }
 
@@ -66,13 +72,13 @@ export const ProfilePost = () => {
 
   return (
     <>
-      {posts.map((post: any) => (
+      {props.posts.map((post: any) => (
         <div
           className="flex p-3 text-wrap whitespace-normal break-words border-b border-slate-700"
           key={post.id}
         >
           <img
-            className="h-[50px] rounded-full"
+            className="h-[50px] w-[50px] object-cover rounded-full"
             src={post.user.profilePicture}
           />
           <div className="ml-[10px] text-wrap whitespace-normal break-words w-full text-white flex flex-col">

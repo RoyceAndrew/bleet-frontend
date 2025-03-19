@@ -21,5 +21,6 @@ export const useProfilePost = create((set) => ({
     } catch (err) {
       set({posts: null, isLoading: false})
     }
-  }
+  },
+  logout: () => set({ posts: null, isLoading: true }),  
 }));

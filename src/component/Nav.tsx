@@ -6,6 +6,7 @@ import { TextareaAutosize, CircularProgress } from "@mui/material";
 import { usePost } from "../hook/usePost";
 import { BeatLoader } from "react-spinners";
 import { useProfilePost } from "../hook/useProfilePost";
+import useGetPosts from "../hook/useGetPosts";
 
 export const Nav = () => {
   const location = useLocation().pathname;
@@ -19,24 +20,33 @@ export const Nav = () => {
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const getData = useProfilePost((state: any) => state.getProfilePosts)
+  const logOutProfilePost = useProfilePost((state: any) => state.logout);
+  const logOutGetPosts = useGetPosts((state: any) => state.logout);
+  const getAllPosts = useGetPosts((state: any) => state.getPosts);
 
   useEffect(() => {
     setFill(location);
   }, [location]);
 
   useEffect(() => {
-    if (user.displayname.length > 9) {
+    if (user.displayname.length > 10) {
       setDot('...')
     } else {
       setDot('')
     }
-    if (user.username.length > 9) {
+    if (user.username.length > 10) {
       setUserDot('...')
     } else {
       setUserDot('')
     }
     
   }, [user]);
+
+  const logout = () => {
+    logOut();
+    logOutProfilePost();
+    logOutGetPosts();
+  };
 
   const submit = async (e: any) => {
      e.preventDefault();  
@@ -51,6 +61,7 @@ export const Nav = () => {
        return
      }
      getData()
+     getAllPosts()
      setOpen(false);
      setText('');
      setLoading(false);
@@ -127,7 +138,7 @@ export const Nav = () => {
           isOpen ? "block" : "hidden"
         } rounded-md absolute shadow-[0px_0px_6px_4px_#314158] ring-1 ring-slate-700 hover:bg-slate-700  drop-shadow-xs z-30 w-[240px] md:w-[270px] mr-[-190px] md:ml-[-10px] bg-[#15202B] bottom-[80px]`}
       >
-        <p onClick={() => logOut()} className="text-white cursor-pointer p-2">
+        <p onClick={logout} className="text-white cursor-pointer p-2">
           {"Log out " + "@" + user.username}
         </p>
       </div>

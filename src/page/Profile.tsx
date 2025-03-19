@@ -8,6 +8,7 @@ import { BeatLoader } from "react-spinners";
 import { EditPhoto } from "../component/EditPhoto";
 import { useUpload } from "../hook/useUpload";
 import { ProfilePost } from "../component/ProfilePost";
+import { useProfilePost } from "../hook/useProfilePost";
 
 interface userType {
   displayname: string;
@@ -31,6 +32,9 @@ export const Profile = () => {
   const [cropBanner, setCropBanner] = useState<string | null>(null);
   const [previewBanner, setPreviewBanner] = useState(null);
   const [cropImage, setCropImage] = useState<string | null>(null);
+  const getData = useProfilePost((state: any) => state.getProfilePosts);
+  const posts = useProfilePost((state: any) => state.posts);
+  const isloading = useProfilePost((state: any) => state.isLoading);
   const formik = useFormik({
     initialValues: {
       displayname: user.displayname || "",
@@ -333,7 +337,7 @@ export const Profile = () => {
           />
         )}
       </div>
-      <ProfilePost/>
+      <ProfilePost getData={getData} posts={posts} loading={isloading}/>
     </section>
   );
 };
