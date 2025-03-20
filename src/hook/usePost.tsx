@@ -11,6 +11,7 @@ export const usePost = async (data: any) => {
       return {
         success: false,
         message: error.response?.data.error || error.response?.data,
+        
       };
     } else {
       return { success: false, message: error };
