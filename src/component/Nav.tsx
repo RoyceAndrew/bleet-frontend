@@ -79,13 +79,6 @@ export const Nav = () => {
           text="Home"
         />
         <NavRoute
-          to="/explore"
-          fill={fill}
-          icon="bi-search"
-          iconActive="bi-search-heart"
-          text="Explore"
-        />
-        <NavRoute
           to="/profile"
           fill={fill}
           icon="bi-person"

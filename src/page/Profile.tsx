@@ -7,7 +7,7 @@ import { useEditProfile } from "../hook/useEditProfile";
 import { BeatLoader } from "react-spinners";
 import { EditPhoto } from "../component/EditPhoto";
 import { useUpload } from "../hook/useUpload";
-import { ProfilePost } from "../component/ProfilePost";
+import { HomePost } from "../component/HomePost";
 import { useProfilePost } from "../hook/useProfilePost";
 
 interface userType {
@@ -154,7 +154,7 @@ export const Profile = () => {
       />
       <button
         onClick={() => setOpen(true)}
-        className="text-white relative top-[-50px] cursor-pointer hover:bg-slate-800 right-[-77%] ring-1 ring-slate-700 px-5 py-1 rounded-2xl z-30"
+        className="text-white relative top-[-50px] cursor-pointer hover:bg-slate-800 right-[-70%] sm:right-[-77%] ring-1 ring-slate-700 px-5 py-1 rounded-2xl z-30"
       >
         Edit profile
       </button>
@@ -337,7 +337,7 @@ export const Profile = () => {
           />
         )}
       </div>
-      <ProfilePost getData={getData} posts={posts} loading={isloading}/>
+      <HomePost getData={getData} posts={posts} loading={isloading} fill={true}/>
     </section>
   );
 };

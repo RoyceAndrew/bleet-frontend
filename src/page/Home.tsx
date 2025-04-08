@@ -1,5 +1,5 @@
 import useGetPosts  from "../hook/useGetPosts";
-import { ProfilePost } from "../component/ProfilePost";
+import { HomePost } from "../component/HomePost";
 
 export const Home = () => {
    const getPosts = useGetPosts((state: any) => state.getPosts);
@@ -8,6 +8,6 @@ export const Home = () => {
    const stream = useGetPosts((state: any) => state.streamPost);
 
     return <section id="home">
-        <ProfilePost posts={posts} loading={loading} getData={getPosts} stream={stream}/>
+        <HomePost posts={posts} loading={loading} getData={getPosts} stream={stream} fill={true}/>
     </section>
 }

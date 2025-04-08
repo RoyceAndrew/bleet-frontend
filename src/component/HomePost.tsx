@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useProfilePost } from "../hook/useProfilePost";
 import { useUser } from "../hook/useUser";
 import { BeatLoader } from "react-spinners";
@@ -6,41 +6,53 @@ import { useState } from "react";
 import { formatDistance } from "date-fns";
 import useGetPosts from "../hook/useGetPosts";
 import { useLike } from "../hook/useLike";
+import { useLikeList } from "../hook/useLikeList";
+import { useLocation } from "react-router";
+import { useNavigate } from "react-router";
 
 interface Props {
   posts: any;
   getData: any;
   loading: any;
   stream?: any;
+  fill: boolean;
 }
 
-export const ProfilePost = (props: Props) => {
+export const HomePost = (props: Props) => {
+  const navigate = useNavigate()
   const user = useUser((state: any) => state.user);
+  const page = useLocation();
+  const fatched = useRef(false);
+  const closeStream = useGetPosts((state: any) => state.closeEvent);
   const deletePost = useProfilePost((state: any) => state.deleteProfilePost);
   const [open, setOpen] = useState<number | null>(null);
   const deletePosts = useGetPosts((state: any) => state.deletePost);
-  const [likeList, setLikeList] = useState([]);
+  const likeList = useLikeList((state: any) => state.likeList);
+  const setLikeList = useLikeList((state: any) => state.setLikeList);
+  const [loading, setLoading] = useState(false);
+  const [loadingLike, setLoadingLike] = useState(false);
 
   useEffect(() => {
     const checkLike = async () => {
+      setLoading(true);
+      await props.getData();
       const result = await useLike();
       setLikeList(result.message.data);
+      if (props.stream) {
+        await props.stream();
+      }
+      fatched.current = true;
+      setLoading(false);
     };
 
-    props.getData();
-    checkLike();
-    console.log(likeList);
-    if (props.stream) {
-      props.stream();
+    if (!fatched.current) {
+      checkLike();
     }
-  }, [user]);
 
-  useEffect(() => {
-    setLikeList(props.posts.map((post: any) => post.Like));
-    console.log(likeList);
-  }, []);
+    return () => closeStream();
+  }, [user, page, fatched]);
 
-  if (props.loading) {
+  if (props.loading || loading) {
     return (
       <div className="w-full h-full flex justify-center items-center">
         <BeatLoader color="white" />
@@ -89,15 +101,29 @@ export const ProfilePost = (props: Props) => {
   }
 
   const handleLike = async (data: any) => {
+    setLoadingLike(true);
     const result = await useLike({ postId: data.id });
-    props.getData();
     setLikeList(result.message.data);
+    props.getData();
+    fatched.current = true;
+    setLoadingLike(false);
   };
+
+  const openDetail = (postId: string) => {
+    navigate(`/post/${postId}`);
+  }
+
+  const openCheck = (event: any, postId: any) => {
+    event.stopPropagation();
+    if (open) return setOpen(null);
+    setOpen(postId);
+  }
 
   return (
     <>
       {props.posts.map((post: any) => (
         <div
+          // onClick={() => openDetail(post.id)}
           className="flex p-3 text-wrap whitespace-normal break-words border-b border-slate-700"
           key={post.id}
         >
@@ -114,7 +140,7 @@ export const ProfilePost = (props: Props) => {
                 <p className="text-slate-500">{date(post.created_at)}</p>
               </div>
               <i
-                onClick={() => setOpen(post.id)}
+                onClick={(e) => openCheck(e, post.id)}
                 className="text-slate-500 hover:bg-blue-200 cursor-pointer p-0.5 px-1.5 rounded-full bi bi-three-dots"
               ></i>
               <div
@@ -134,8 +160,8 @@ export const ProfilePost = (props: Props) => {
                 )}
               </div>
               <div
-                onClick={() => setOpen(null)}
-                className={`fixed z-50 w-screen h-screen top-0 left-0 ${
+                onClick={(e) => openCheck(e, post.id)}
+                className={`fixed z-[99] w-screen h-screen top-0 left-0 ${
                   open ? "block" : "hidden"
                 }`}
               ></div>
@@ -144,12 +170,13 @@ export const ProfilePost = (props: Props) => {
               {post.text}
             </p>
             <div className="mt-2">
-              <div
+              <button
                 onClick={() => handleLike(post)}
+                disabled={loadingLike}
                 className="flex w-min cursor-pointer items-center"
               >
                 <i
-                  className={`bi transition-colors duration-300 hover:animate-bounce mr-1 ${
+                  className={`bi transition-colors duration-300 mr-1 ${
                     likeList.find((data: any) => data.post_id === post.id)
                       ? "text-red-500 bi-heart-fill"
                       : "text-slate-400 bi-heart"
@@ -164,12 +191,12 @@ export const ProfilePost = (props: Props) => {
                 >
                   {post.Like.length}
                 </p>
-              </div>
+              </button>
             </div>
           </div>
         </div>
       ))}
-      <div className="h-[50vh]"></div>
+      {props.fill && <div className="h-[50vh]"></div>}
     </>
   );
 };

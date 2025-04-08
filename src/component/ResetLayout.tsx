@@ -1,7 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
 import { ToastContainer, Bounce } from "react-toastify";
 
-export const ResetLayout = () => {
+export const ResetLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <section
       id="forgotpass"
@@ -30,6 +30,7 @@ export const ResetLayout = () => {
           </Link>
           <img className="h-[50px]" src="/pct/bleetlogo.png" />
           <Outlet />
+          {children}
         </div>
       </div>
     </section>

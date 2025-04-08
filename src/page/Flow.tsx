@@ -64,7 +64,7 @@ export const Flow = () => {
               register={register}
               setRegister={setRegister}
             />
-            <p className="text-white font-semibold sm:mt-10">
+            <p className="text-white font-semibold sm:mt-6 sm:mb-3">
               Already have an account?
             </p>
             <button

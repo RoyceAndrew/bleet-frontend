@@ -10,6 +10,8 @@ import { ForgotPass } from "./page/ForgotPass";
 import { ResetLayout } from "./component/ResetLayout";
 import { ChangePass } from "./page/ChangePass";
 import { Profile } from "./page/Profile";
+import { Verify } from "./page/Verify";
+import { Post } from "./page/Post";
 
 function App() {
   const user = useUser((state: any) => state.user);
@@ -32,8 +34,9 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
+          <Route path="/verify/:token" element={<Verify />} />
           <Route path="/" element={!user ? <Flow /> : <Navigate to="/home" replace />} />
-          <Route path="/password_reset" element={!user ? <ResetLayout /> : <Navigate to="/home" replace />} >
+          <Route path="/password_reset" element={!user ? <ResetLayout ><></></ResetLayout> : <Navigate to="/home" replace />} >
           <Route index element={<ForgotPass />} />
           <Route path=":token" element={<ChangePass />} />
           </Route>
@@ -44,9 +47,10 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="/home" element={<Home />} />
+            <Route path="/home" element={<Home  key={1}/>} />
             <Route path="/explore" element={<Flow />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<Profile key={3} />} />
+            <Route path="/post/:postId" element={<Post/>} />
           </Route>
         </Routes>
       </BrowserRouter>

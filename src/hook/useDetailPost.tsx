@@ -1,0 +1,15 @@
+import axios, { AxiosError } from "axios";
+
+export const useDetailPost = async (postId: any) => {
+    try {
+        const response = await axios.get(`http://localhost:3000/api/post/detail/${postId}`, { withCredentials: true });
+        const result = response.data.post;
+        return {success: true, message: result}
+     } catch (error: unknown | Error | AxiosError) {
+         if (error instanceof AxiosError) {
+            return {successs: false, message: error.response?.data.error || error.response?.data};
+         } else {
+             return {success: false, message: error}
+         }
+     }
+}
