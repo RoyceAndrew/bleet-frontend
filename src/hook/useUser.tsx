@@ -7,7 +7,7 @@ export const useUser = create((set) => ({
 
   checkUser: async () => {
     try {
-      const result = await axios.get("http://localhost:3000/api/user/getInfo", {
+      const result = await axios.get(import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/user/getInfo", {
         withCredentials: true,
       });
       set({ user: result.data.data, isLoading: false });
@@ -24,7 +24,7 @@ export const useUser = create((set) => ({
 
   logout: () => {
     axios.post(
-      "http://localhost:3000/api/user/logout",
+      import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/user/logout",
       {},
       { withCredentials: true }
     );

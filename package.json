@@ -16,6 +16,7 @@
     "@tailwindcss/vite": "^4.0.7",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
     "formik": "^2.4.6",
     "luxon": "^3.5.0",
     "react": "^19.0.0",

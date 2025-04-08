@@ -4,7 +4,7 @@ export const useCheckEmail = async (email: string) => {
     try {
         
         const response = await axios.post(
-            `http://localhost:3000/api/user/check_email`,
+            import.meta.env.VITE_REACT_APP_BACKEND_URL + `/api/user/check_email`,
             {email: email}
         );
         return { success: true, message: response.data.message };

@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 
 export const usePost = async (data: any) => {
   try {
-    const response = await axios.post("http://localhost:3000/api/post/create", data, {
+    const response = await axios.post(import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/post/create", data, {
       withCredentials: true,
     });
     return { success: true, message: response.data.message };

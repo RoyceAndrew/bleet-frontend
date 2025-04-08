@@ -7,7 +7,7 @@ interface inputData {
 
 export const useLogin = async (data: inputData) => {
     try {
-        const response = await axios.post("http://localhost:3000/api/user/login", data, {withCredentials: true});
+        const response = await axios.post(import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/user/login", data, {withCredentials: true});
         const result = response.data.token;
         return {success: true, message: result}
      } catch (error: unknown | Error | AxiosError) {

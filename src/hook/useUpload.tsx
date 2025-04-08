@@ -16,7 +16,7 @@ export const useUpload = async (data: any, api: api, user: any) => {
           );
           const formData = new FormData();
           formData.append("file", file);
-        await axios.patch("http://localhost:3000/api/user/" + api, formData, {withCredentials: true})
+        await axios.patch(import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/user/" + api, formData, {withCredentials: true})
         
         return {success: true}
      } catch (error: unknown | Error | AxiosError) {

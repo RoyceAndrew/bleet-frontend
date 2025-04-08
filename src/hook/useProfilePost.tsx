@@ -7,7 +7,7 @@ export const useProfilePost = create((set) => ({
   getProfilePosts: async () => {
     try {
       const respond = await axios.get(
-        "http://localhost:3000/api/post/profilepost",
+        import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/post/profilepost",
         { withCredentials: true }
       );
       const result = respond.data.post;
@@ -19,7 +19,7 @@ export const useProfilePost = create((set) => ({
 
   deleteProfilePost: async (data: any) => {
     try {
-      await axios.delete("http://localhost:3000/api/post/delete", {
+      await axios.delete(import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/post/delete", {
         data,
         withCredentials: true,
       });

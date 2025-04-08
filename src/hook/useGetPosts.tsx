@@ -8,7 +8,7 @@ const useGetPosts = create<any>((set, get) => ({
 
     getPosts: async () => {
         try {
-            const response = await axios.get("http://localhost:3000/api/post", {
+            const response = await axios.get(import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/post", {
                 withCredentials: true,
             });
             const result = response.data.post;
@@ -27,7 +27,7 @@ const useGetPosts = create<any>((set, get) => ({
       }
 
         const eventSource = new EventSource(
-          "http://localhost:3000/api/post/stream",
+          import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/post/stream",
           { withCredentials: true }
         );
 

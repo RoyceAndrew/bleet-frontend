@@ -9,7 +9,7 @@ interface userData {
 const useRegister = async (data: userData) => {
   try {
     const response = await axios.post(
-      "http://localhost:3000/api/user/register",
+      import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/user/register",
       data
     );
     return { success: true, message: response.data.message };

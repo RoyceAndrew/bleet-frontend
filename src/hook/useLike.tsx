@@ -4,7 +4,7 @@ export const useLike = async (data?: any) => {
     try {
        
         const response = await axios.post(
-            "http://localhost:3000/api/post/like",
+            import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/post/like",
             data,
             { withCredentials: true }
         );

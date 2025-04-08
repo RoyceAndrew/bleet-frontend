@@ -55,7 +55,7 @@ export const ChangePass = () => {
   useEffect(() => {
     const checkReset = async () => {
       try {
-        await axios.get("http://localhost:3000/api/user/check_reset/" + token, {
+        await axios.get(import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/user/check_reset/" + token, {
           withCredentials: true,
         });
         setPageLoading(false);
