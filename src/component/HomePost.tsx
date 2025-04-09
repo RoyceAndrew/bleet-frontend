@@ -109,9 +109,9 @@ export const HomePost = (props: Props) => {
     setLoadingLike(false);
   };
 
-  const openDetail = (postId: string) => {
-    navigate(`/post/${postId}`);
-  }
+  // const openDetail = (postId: string) => {
+  //   navigate(`/post/${postId}`);
+  // }
 
   const openCheck = (event: any, postId: any) => {
     event.stopPropagation();

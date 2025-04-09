@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import axios from "axios";
+// import axios from "axios";
 
 export const useLikeList = create((set) => ({
     likeList: [],
