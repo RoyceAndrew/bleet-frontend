@@ -8,7 +8,7 @@ import useGetPosts from "../hook/useGetPosts";
 import { useLike } from "../hook/useLike";
 import { useLikeList } from "../hook/useLikeList";
 import { useLocation } from "react-router";
-import { useNavigate } from "react-router";
+// import { useNavigate } from "react-router";
 
 interface Props {
   posts: any;
@@ -19,7 +19,7 @@ interface Props {
 }
 
 export const HomePost = (props: Props) => {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const user = useUser((state: any) => state.user);
   const page = useLocation();
   const fatched = useRef(false);
