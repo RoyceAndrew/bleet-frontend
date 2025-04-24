@@ -8,7 +8,10 @@ import useGetPosts from "../hook/useGetPosts";
 import { useLike } from "../hook/useLike";
 import { useLikeList } from "../hook/useLikeList";
 import { useLocation } from "react-router";
-// import { useNavigate } from "react-router";
+import { useNavigate } from "react-router";
+import { PostInput } from "./PostInput";
+import { upComment } from "../hook/useComment";
+import { useCommentList } from "../hook/useCommentList";
 
 interface Props {
   posts: any;
@@ -16,12 +19,15 @@ interface Props {
   loading: any;
   stream?: any;
   fill: boolean;
+  profile?: string;
+  comment: any;
 }
 
 export const HomePost = (props: Props) => {
-  // const navigate = useNavigate()
+  const navigate = useNavigate();
   const user = useUser((state: any) => state.user);
   const page = useLocation();
+  const [hover, setHover] = useState<string | null>();
   const fatched = useRef(false);
   const closeStream = useGetPosts((state: any) => state.closeEvent);
   const deletePost = useProfilePost((state: any) => state.deleteProfilePost);
@@ -30,17 +36,30 @@ export const HomePost = (props: Props) => {
   const likeList = useLikeList((state: any) => state.likeList);
   const setLikeList = useLikeList((state: any) => state.setLikeList);
   const [loading, setLoading] = useState(false);
-  const [loadingLike, setLoadingLike] = useState(false);
+  const [loadingLike, setLoadingLike] = useState<string[] | undefined>([]);
+  const updateCommentList = useCommentList((state: any) => state.updateCommentList);
+  const commentList = useCommentList((state: any) => state.commentList);  
+  const setLikeOptimistic = useLikeList(
+    (state: any) => state.setLikeOptimistic
+  );
+  const setDeleteLike = useLikeList((state: any) => state.setDeleteLike);
+  const [openComment, setOpenComment] = useState<boolean | string | null>(
+    false
+  );
 
   useEffect(() => {
     const checkLike = async () => {
       setLoading(true);
-      await props.getData();
+      if (props.profile) {
+        await props.getData(props.profile);
+      } else if (!props.profile) {
+        await props.getData();
+      }
       const result = await useLike();
       setLikeList(result.message.data);
-      if (props.stream) {
-        await props.stream();
-      }
+      // if (props.stream) {
+      //   await props.stream();
+      // }
       fatched.current = true;
       setLoading(false);
     };
@@ -49,8 +68,14 @@ export const HomePost = (props: Props) => {
       checkLike();
     }
 
-    return () => closeStream();
+    // return () => closeStream();
   }, [user, page, fatched]);
+
+  useEffect(() => {
+    if (props.comment) {
+      updateCommentList(props.comment);
+    }
+  }, [props.comment]);
 
   if (props.loading || loading) {
     return (
@@ -100,31 +125,47 @@ export const HomePost = (props: Props) => {
     }
   }
 
-  const handleLike = async (data: any) => {
-    setLoadingLike(true);
+  const handleLike = async (e: any, data: any) => {
+    e.stopPropagation();
+    setLoadingLike((prev) => [...prev!, data.id]);
+    const userData = {
+      post_id: data.id,
+      user_id: user.id,
+    };
+    if (likeList.find((like: any) => like.post_id === data.id)) {
+      setDeleteLike(userData);
+    } else {
+      setLikeOptimistic(userData);
+    }
     const result = await useLike({ postId: data.id });
     setLikeList(result.message.data);
-    props.getData();
+
     fatched.current = true;
-    setLoadingLike(false);
+    setLoadingLike((prev) => prev!.filter((id: any) => id !== data.id));
   };
 
-  // const openDetail = (postId: string) => {
-  //   navigate(`/post/${postId}`);
-  // }
+  const openDetail = (postId: string) => {
+    navigate(`/post/${postId}`);
+  };
 
   const openCheck = (event: any, postId: any) => {
     event.stopPropagation();
     if (open) return setOpen(null);
     setOpen(postId);
-  }
+  };
+
+  const handleComment = (event: any, postId: string) => {
+    event.stopPropagation();
+
+    setOpenComment(postId);
+  };
 
   return (
     <>
       {props.posts.map((post: any) => (
         <div
-          // onClick={() => openDetail(post.id)}
-          className="flex p-3 text-wrap whitespace-normal break-words border-b border-slate-700"
+          onClick={() => openDetail(post.id)}
+          className={`flex p-3 text-wrap whitespace-normal break-words border-b border-slate-700 hover:bg-slate-800 cursor-pointer`}
           key={post.id}
         >
           <img
@@ -169,33 +210,68 @@ export const HomePost = (props: Props) => {
             <p className="break-all mt-[-5px] whitespace-normal max-w-[500px]">
               {post.text}
             </p>
-            <div className="mt-2">
+            <div className="mt-2 flex">
               <button
-                onClick={() => handleLike(post)}
-                disabled={loadingLike}
-                className="flex w-min cursor-pointer items-center"
+                onClick={(e) => handleLike(e, post)}
+                onMouseOver={() => setHover(post.id)}
+                onMouseLeave={() => setHover(null)}
+                disabled={
+                  loadingLike?.find((id: any) => id === post.id) ? true : false
+                }
+                className="flex w-min ml-[-5px] hover:text-red-500 duration-300 hover:bg-[#fb2c3640] py-1 px-2 rounded-2xl cursor-pointer items-center"
               >
                 <i
-                  className={`bi transition-colors duration-300 mr-1 ${
+                  className={`bi  transition-colors duration-300 mr-1 ${
+                    likeList.find((data: any) => data.post_id === post.id) ||
+                    hover === post.id
+                      ? " text-red-500 "
+                      : " text-slate-400"
+                  } ${
                     likeList.find((data: any) => data.post_id === post.id)
-                      ? "text-red-500 bi-heart-fill"
-                      : "text-slate-400 bi-heart"
-                  }`}
+                      ? " bi-heart-fill"
+                      : " bi-heart"
+                  } `}
                 ></i>
                 <p
-                  className={`${
-                    likeList.find((data: any) => data.post_id === post.id)
-                      ? "text-red-500"
-                      : "text-slate-400"
+                  className={`duration-300 ${
+                    likeList.find((data: any) => data.post_id === post.id) ||
+                    hover === post.id
+                      ? " text-red-500"
+                      : " text-slate-400"
                   }`}
                 >
-                  {post.Like.length}
+                  {!likeList.find((data: any) => data.post_id === post.id) &&
+                  post.Like.find((data: any) => data.user_id === user.id)
+                    ? post.Like.length - 1
+                    : likeList.find((data: any) => data.post_id === post.id) &&
+                      !post.Like.find((data: any) => data.user_id === user.id)
+                    ? post.Like.length + 1
+                    : post.Like.length}
+                </p>
+              </button>
+              <button
+                onClick={(e) => handleComment(e, post)}
+                className="flex text-slate-400 w-min ml-4 hover:text-green-400 duration-300 hover:bg-green-950 py-1 px-2 rounded-2xl cursor-pointer items-center"
+              >
+                <i className={`mr-1 bi ${commentList.find((data: any) => data.user_id === user.id && data.reply_to === post.id) ? "text-green-400 bi-chat-fill" : "text-slate-400 bi-chat"}`}></i>
+                <p className={`${commentList.find((data: any) => data.user_id === user.id && data.reply_to === post.id) ? "text-green-400" : "text-slate-400"}`}>
+                  {Array.isArray(commentList)
+                    ? commentList.filter(
+                        (data: any) => data.reply_to === post.id
+                      ).length
+                    : 0}
                 </p>
               </button>
             </div>
           </div>
         </div>
       ))}
+      <PostInput
+        comment={true}
+        apiCall={upComment}
+        open={openComment}
+        setOpen={setOpenComment}
+      />
       {props.fill && <div className="h-[50vh]"></div>}
     </>
   );

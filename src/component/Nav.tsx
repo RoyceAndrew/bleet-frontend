@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { NavRoute } from "./NavRoute";
 import { useUser } from "../hook/useUser";
 import { TextareaAutosize, CircularProgress } from "@mui/material";
@@ -7,12 +7,15 @@ import { usePost } from "../hook/usePost";
 import { BeatLoader } from "react-spinners";
 import { useProfilePost } from "../hook/useProfilePost";
 import useGetPosts from "../hook/useGetPosts";
+import { PostInput } from "./PostInput";
 
 export const Nav = () => {
   const location = useLocation().pathname;
   const [isOpen, setIsOpen] = useState(false);
+  const {profile} = useParams() 
   const logOut = useUser((state: any) => state.logout);
   const user = useUser((state: any) => state.user);
+  const [checkProfile, setCheckProfile] = useState(false);
   const [fill, setFill] = useState(location);
   const [dot, setDot] = useState('');
   const [userdot, setUserDot] = useState('');
@@ -26,6 +29,11 @@ export const Nav = () => {
 
   useEffect(() => {
     setFill(location);
+    if (profile === user.username) {
+      setCheckProfile(true);
+    } else {
+      setCheckProfile(false);
+    }
   }, [location]);
 
   useEffect(() => {
@@ -46,7 +54,7 @@ export const Nav = () => {
     logOut();
     logOutProfilePost();
     logOutGetPosts();
-  };
+  };  
 
   const submit = async (e: any) => {
      e.preventDefault();  
@@ -79,8 +87,9 @@ export const Nav = () => {
           text="Home"
         />
         <NavRoute
-          to="/profile"
+          to={"/" + user.username} 
           fill={fill}
+          profile={checkProfile}
           icon="bi-person"
           iconActive="bi-person-fill"
           text="Profile"
@@ -88,25 +97,7 @@ export const Nav = () => {
         <button onClick={() => setOpen(true)} className="bg-white my-3 w-[50px] mr-1.5 md:mr-0 h-[45px] rounded-full cursor-pointer hover:bg-slate-200 md:py-2 md:w-full md:rounded-3xl">
           <p className="hidden md:block">Post</p><i className="md:hidden text-2xl bi bi-feather"></i>
         </button>
-        <div onClick={() => setOpen(false)} className={`${open ? "block" : "hidden"} flex items-start justify-center z-50 fixed top-0 left-0 w-screen h-screen bg-[#FFFFFF50]`}>
-          <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="w-[500px] bg-[#15202B] rounded-xl mt-[3%] flex flex-col">
-          <i onClick={() => setOpen(false)} className="text-white  mt-2 ml-2 flex items-center justify-center text-3xl hover:bg-slate-700 rounded-full w-[35px] h-[35px] cursor-pointer bi bi-x"></i>
-          <div className="flex">
-          <img src={user.profilePicture} alt="profile" className="w-[40px] h-[40px] rounded-full object-cover mt-2 ml-2" />
-          <TextareaAutosize onChange={(e) => setText(e.target.value)} value={text} name="text" maxLength={280} minRows={4} placeholder="What's happening?" style={{width: '100%', color: 'white', border: 'none', outline: 'none', padding: '15px', resize: 'none'}}/>
-          </div>
-          <div className="flex justify-between border-t border-slate-700 py-2 mx-4">
-            <div>
-
-            </div>
-            <div className="flex">
-            <CircularProgress variant="determinate" size={25} value={Math.round(text.length * 100 / 280 )} color={text.length * 100 / 280 === 100 ? "error" : "primary"}/>
-            <button disabled={loading} type="submit" className="py-0.5 ml-3 px-3.5  rounded-2xl flex items-center justify-center bg-white text-black transition-colors duration-300 ease-out text-md hover:bg-slate-400 rounded-full[35px] cursor-pointer">{loading ? <BeatLoader color="black" size={8} /> : "Post"}</button>
-            </div>
-          </div>
-
-          </form>
-        </div>
+        <PostInput apiCall={usePost} open={open} setOpen={setOpen}/>
       </nav>
       <div
         onClick={() => setIsOpen(true)}

@@ -3,15 +3,17 @@ import axios from "axios";
 
 export const useProfilePost = create((set) => ({
   posts: [],
+  comments: [],
   isLoading: true,
-  getProfilePosts: async () => {
+  getProfilePosts: async (username: string) => {
     try {
       const respond = await axios.get(
-        import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/post/profilepost",
+        import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/post/profilepost/" + username,
         { withCredentials: true }
       );
-      const result = respond.data.post;
-      set({ posts: result, isLoading: false });
+      const result = respond.data.posts;
+      const comments = respond.data.comments;
+      set({ posts: result, isLoading: false, comments: comments });
     } catch (err) {
       set({ posts: [], isLoading: false });
     }

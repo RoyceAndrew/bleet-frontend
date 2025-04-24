@@ -49,7 +49,8 @@ function App() {
           >
             <Route path="/home" element={<Home  key={1}/>} />
             <Route path="/explore" element={<Flow />} />
-            <Route path="/profile" element={<Profile key={3} />} />
+            <Route path="/:profile" element={<Profile key={3} />} />
+            <Route path="/:profile/:page" element={<Profile key={3} />} />
             <Route path="/post/:postId" element={<Post/>} />
           </Route>
         </Routes>

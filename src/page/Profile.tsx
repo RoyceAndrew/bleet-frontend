@@ -9,6 +9,8 @@ import { EditPhoto } from "../component/EditPhoto";
 import { useUpload } from "../hook/useUpload";
 import { HomePost } from "../component/HomePost";
 import { useProfilePost } from "../hook/useProfilePost";
+import { useParams } from "react-router";
+import { useNavigate } from "react-router";
 
 interface userType {
   displayname: string;
@@ -19,6 +21,9 @@ interface userType {
 }
 
 export const Profile = () => {
+  const {page} = useParams();
+  const navigate = useNavigate();
+  const { profile } = useParams();
   const user = useUser((state: any) => state.user);
   const [edit, setEdit] = useState(false);
   const editUser = useUser((state: any) => state.editUser);
@@ -27,6 +32,8 @@ export const Profile = () => {
   const [open, setOpen] = useState(false);
   const [website, setWebsite] = useState("");
   const [image, setImage] = useState(null);
+  const [active, setActive] = useState("");
+  const comment = useProfilePost((state: any) => state.comments);
   const [preview, setPreview] = useState(null);
   const [banner, setBanner] = useState(null);
   const [cropBanner, setCropBanner] = useState<string | null>(null);
@@ -100,6 +107,14 @@ export const Profile = () => {
   }, []);
 
   useEffect(() => {
+    if (!page) {
+      setActive("posts");
+    } else if (page === "replies") {
+      setActive("replies");
+    }
+  }, [page]);
+
+  useEffect(() => {
     if (user.website) {
       if (
         user.website.includes("https://") ||
@@ -158,7 +173,8 @@ export const Profile = () => {
       >
         Edit profile
       </button>
-      <div className="p-[15px] mt-[-30px] border-b border-slate-700">
+      <div className=" pb-0 mt-[-30px] border-b border-slate-700">
+        <div className="mx-[15px] mt-[15px]">
         <h1 className="text-2xl text-white font-semibold">
           {user.displayname}
         </h1>
@@ -188,6 +204,15 @@ export const Profile = () => {
           <p className="text-slate-400 text-sm">
             <i className="bi bi-calendar4-week"></i> Joined {date}
           </p>
+          </div>
+        </div>
+        <div className="flex justify-between">
+            <div onClick={() => navigate("/" + user.username)} className="w-1/2 flex justify-center cursor-pointer hover:bg-slate-700">
+            <p className={` py-1 px-2 ${active === "posts" ? " border-b-4 text-white border-blue-500" : "text-slate-400 border-b-0"}`}>Post</p>
+            </div>
+            <div onClick={() => navigate("/" + user.username + "/replies")} className={`w-1/2 flex justify-center cursor-pointer hover:bg-slate-700`}>
+            <p className={` py-1 px-2 ${active === "replies" ? " border-b-4 text-white border-blue-500" : "text-slate-400 border-b-0"}`}>Reply</p>
+            </div>
         </div>
       </div>
       <div
@@ -337,7 +362,7 @@ export const Profile = () => {
           />
         )}
       </div>
-      <HomePost getData={getData} posts={posts} loading={isloading} fill={true}/>
+      <HomePost getData={getData} profile={profile} posts={posts} loading={isloading} fill={true} comment={comment}/>
     </section>
   );
 };
