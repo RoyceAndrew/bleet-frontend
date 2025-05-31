@@ -63,14 +63,14 @@ export const Flow = () => {
   }, [direct]);
 
   if (loading && localStorage.getItem("sb-evardcsgulwzvbjwcokb-auth-token")) {
-    return <div className="flex justify-center bg-[#15202B] items-center w-[100vw] h-[100vh]"><BeatLoader color="white" /></div>;
+    return <div className="flex justify-center bg-[#15202B] items-center w-[100vw] h-[100dvh]"><BeatLoader color="white" /></div>;
   }
 
   return (
     <>
       <section
         id="flow"
-        className="flex justify-center w-full h-[100vh]  bg-[#15202B]"
+        className="flex justify-center w-full h-[100dvh]  bg-[#15202B]"
       >
         <ToastContainer
           position="top-center"
