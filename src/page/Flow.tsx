@@ -18,37 +18,45 @@ export const Flow = () => {
     });
   };
 
-  useEffect(() => {
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setLoading(true);
-        if (event === "SIGNED_IN" && session?.user) {
-          const user = session.user;
-
-          try {
-            await axios.post(
-              import.meta.env.VITE_REACT_APP_BACKEND_URL +
-                "/api/user/loginGoogle",
-              { user },
-              { withCredentials: true }
-            );
-
-            localStorage.removeItem("sb-evardcsgulwzvbjwcokb-auth-token");
-            window.location.reload();
-            setLoading(false);
-          } catch (err) {
-            console.error("Gagal login Google ke backend", err);
-            localStorage.removeItem("sb-evardcsgulwzvbjwcokb-auth-token");
-            setLoading(false);
-          }
-        }
-      }
+  const handleBackendLogin = async (user: any) => {
+  setLoading(true);
+  try {
+    await axios.post(
+      import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/user/loginGoogle",
+      { user },
+      { withCredentials: true }
     );
+    localStorage.removeItem("sb-evardcsgulwzvbjwcokb-auth-token");
+    window.location.reload(); 
+  } catch (err) {
+    console.error("Failed login", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
-  }, []);
+  useEffect(() => {
+  const checkSession = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      handleBackendLogin(session.user);
+    }
+  };
+
+  checkSession();
+
+  const { data: listener } = supabase.auth.onAuthStateChange(
+    async (event, session) => {
+      if (event === "SIGNED_IN" && session?.user) {
+        handleBackendLogin(session.user);
+      }
+    }
+  );
+
+  return () => {
+    listener.subscription.unsubscribe();
+  };
+}, []);
 
   useEffect(() => {
     if (direct === "login") {
