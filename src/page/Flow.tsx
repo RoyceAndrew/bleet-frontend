@@ -34,10 +34,11 @@ export const Flow = () => {
             );
 
             localStorage.removeItem("sb-evardcsgulwzvbjwcokb-auth-token");
-            
+            window.location.reload();
             setLoading(false);
           } catch (err) {
             console.error("Gagal login Google ke backend", err);
+            localStorage.removeItem("sb-evardcsgulwzvbjwcokb-auth-token");
             setLoading(false);
           }
         }
