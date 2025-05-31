@@ -46,7 +46,6 @@ export const HomePost = (props: Props) => {
   const [hover, setHover] = useState<string | null>();
   const [text, setText] = useState("");
   const fatched = useRef(false);
-  const closeStream = useGetPosts((state: any) => state.closeEvent);
   const [reportLoading, setReportLoading] = useState(false);
   const [report, setReport] = useState<string | null>(null);
   const [hoverProfile, setHoverProfile] = useState<string | null>(null);
@@ -76,17 +75,11 @@ export const HomePost = (props: Props) => {
         setLoading(true);
       }
       document.title = props.title ? props.title + " / Bleet" : "Bleet";
-      // if (props.profile) {
-      //   await props.getData(props.profile);
-      // } else 
       if (!props.profile) {
         await props.getData();
       }
       const result = await useLike();
       setLikeList(result.message.data);
-      // if (props.stream) {
-      //   await props.stream();
-      // }
       fatched.current = true;
       setLoading(false);
     };
@@ -94,8 +87,6 @@ export const HomePost = (props: Props) => {
     if (!fatched.current) {
       checkLike();
     }
-
-    // return () => closeStream();
   }, [user, page, fatched]);
 
   useEffect(() => {
@@ -115,7 +106,6 @@ export const HomePost = (props: Props) => {
     if (props.comment) {
       updateCommentList(props.comment);
     }
-    console.log(commentList)
   }, [props.comment]);
 
   if (props.loading || loading) {

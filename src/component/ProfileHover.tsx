@@ -84,7 +84,6 @@ export const ProfileHover = ({
           axios.get(import.meta.env.VITE_REACT_APP_BACKEND_URL + `/api/post/${user.id}/following`, { withCredentials: true })
         ]);
         const check = await axios.get(import.meta.env.VITE_REACT_APP_BACKEND_URL + `/api/user/follow/${user.id}`, { withCredentials: true });
-        console.log(check);
         if (check.data.result) {
           setCheck(true);
         } else {

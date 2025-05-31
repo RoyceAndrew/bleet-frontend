@@ -3,7 +3,6 @@ import axios, { AxiosError } from "axios";
 const upComment = async (postId: string | undefined, comment: string) => {
     try {
         const response = await axios.post(import.meta.env.VITE_REACT_APP_BACKEND_URL + `/api/post/comment`, {postId, comment}, { withCredentials: true });
-        console.log(response)
         return { success: true, message: response.data.message };
     } catch (error: unknown | Error | AxiosError) {
         if (error instanceof AxiosError) {

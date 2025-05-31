@@ -54,7 +54,6 @@ export const Follow = () => {
         setData(result.data.result);
         getPosts();
         setProfileData(result.data.checkId);
-        console.log(result.data.result);
         setLoading(false);
       } catch (err) {
         console.log(err);

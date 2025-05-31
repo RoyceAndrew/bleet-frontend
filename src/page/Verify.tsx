@@ -15,7 +15,6 @@ export const Verify = () => {
       call.current = true;
     const verify = async () => {
       const result = await useVerify(token as string);
-      console.log(result);
       setCheck(result.success);
       setIsLoading(false);
     };

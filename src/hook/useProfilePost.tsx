@@ -15,7 +15,6 @@ export const useProfilePost = create((set) => ({
         { withCredentials: true }
       );
       const { user, following, follower } = respond.data;
-      console.log(respond.data);
       const result = respond.data.posts;
       const comments = respond.data.comments;
       set({ posts: result, isLoading: false, comments: comments, profileUser: user, following:following, follower: follower });

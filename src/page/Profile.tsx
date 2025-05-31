@@ -156,7 +156,6 @@ export const Profile = () => {
   }
 
   useMountEffect(() => {
-    console.log(profile);
     const callApi = async () => {
       setProfileLoading(true);
       await getData(profile);

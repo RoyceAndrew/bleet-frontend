@@ -41,7 +41,6 @@ export const Footer = () => {
         }
         const res = await axios.get(import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/user/find/" + text, { withCredentials: true });
         setResults(res.data.result);
-        console.log(res.data.result);
     }, 300);
 
     const handleClick = (username: string) => {

@@ -22,7 +22,6 @@ export const ProfileReply = () => {
           profile,
         { withCredentials: true }
       );
-      console.log(result.data.comments);
       setComment(result.data.flatComments);
       setData(result.data.comments);
       setLoading(false);
