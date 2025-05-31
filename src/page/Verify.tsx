@@ -23,7 +23,7 @@ export const Verify = () => {
   }, []);
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen w-screen bg-[#15202B]">
+      <div className="flex justify-center items-center 100dvh w-screen bg-[#15202B]">
         <BeatLoader color="white" />
       </div>
     );

@@ -256,7 +256,7 @@ const submitReport = async (e: React.FormEvent<HTMLFormElement>) => {
         theme="dark"
         transition={Bounce}
       />
-    {report && <div onClick={(e) =>{e.stopPropagation(); setReport(null); setText("")}} className="fixed flex top-0 left-0 w-screen h-screen z-[9999] justify-center bg-[#FFFFFF50]">
+    {report && <div onClick={(e) =>{e.stopPropagation(); setReport(null); setText("")}} className="fixed flex top-0 left-0 w-screen 100dvh z-[9999] justify-center bg-[#FFFFFF50]">
                 <form
           onSubmit={(e) => submitReport(e)}
           onClick={(e) => e.stopPropagation()}
@@ -368,7 +368,7 @@ const submitReport = async (e: React.FormEvent<HTMLFormElement>) => {
               
               <div
                 onClick={(e) => openCheck(e, post.id)}
-                className={`fixed z-[99] w-screen h-screen top-0 left-0 ${
+                className={`fixed z-[99] w-screen 100dvh top-0 left-0 ${
                   open ? "block" : "hidden"
                 }`}
               ></div>

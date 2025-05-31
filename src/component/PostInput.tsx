@@ -74,7 +74,7 @@ export const PostInput = (props: Props) => {
       
       <div
         onClick={() => props.setOpen(false)}
-        className={`${props.open ? "block" : "hidden"} flex items-start justify-center z-[9999] fixed top-0 left-0 w-screen h-screen bg-[#FFFFFF50]`}
+        className={`${props.open ? "block" : "hidden"} flex items-start justify-center z-[9999] fixed top-0 left-0 w-screen 100dvh bg-[#FFFFFF50]`}
       >
         
         <form

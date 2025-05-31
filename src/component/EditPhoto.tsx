@@ -47,10 +47,10 @@ export const EditPhoto = (props: EditPhotoProps) => {
   return (
     props.image && (
       <div
-        className="fixed z-[100] w-screen h-screen bg-[#FFFFFF50] flex justify-center items-center"
+        className="fixed z-[100] w-screen 100dvh bg-[#FFFFFF50] flex justify-center items-center"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col h-screen w-screen sm:h-auto sm:w-auto">
+        <div className="flex flex-col 100dvh w-screen sm:h-auto sm:w-auto">
           <div className="bg-[#15202B]  sm:h-auto items-end  sm:items-center rounded-t-lg py-1 px-2 flex justify-between">
             <div className="flex items-center">
               <i

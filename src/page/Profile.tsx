@@ -193,7 +193,7 @@ export const Profile = () => {
     reader.readAsDataURL(file);
   }
   if (profileLoading) {
-    return <div className="w-full h-screen flex justify-center items-center"><BeatLoader color="white" /></div>
+    return <div className="w-full 100dvh flex justify-center items-center"><BeatLoader color="white" /></div>
   }
 
   const isFollowing = Array.isArray(follower) && follower.some((f: any) => f.user_id === user.id);
@@ -266,7 +266,7 @@ export const Profile = () => {
       </div>
       <div
         onClick={handleClose}
-        className={`fixed z-50 top-0 left-0 flex justify-center items-center w-screen h-screen bg-[#FFFFFF20] ${
+        className={`fixed z-50 top-0 left-0 flex justify-center items-center w-screen 100dvh bg-[#FFFFFF20] ${
           open ? "block" : "hidden"
         }`}
       >
