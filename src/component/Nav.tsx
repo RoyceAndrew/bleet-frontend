@@ -77,7 +77,7 @@ export const Nav = () => {
   };  
 
   return (
-    <header className="flex md:w-[250px] 100dvh sticky z-[110] top-0 bottom-0 md:mr-4 ml-2 mr-1 flex-col items-end md:items-start justify-between">
+    <header className="flex md:w-[250px] h-[100dvh] sticky z-[110] top-0 bottom-0 md:mr-4 ml-2 mr-1 flex-col items-end md:items-start justify-between">
       <nav className="w-full flex flex-col items-end md:items-start">
         <img src="/pct/bleetlogo.png" alt="bleet-logo" className="h-[40px] mr-1 md:mr-0" />
         <NavRoute
@@ -139,7 +139,7 @@ export const Nav = () => {
         onClick={() => setIsOpen(false)}
         className={`${
           isOpen ? "block" : "hidden"
-        } fixed z-10 cursor-default top-0 left-0 w-screen 100dvh bg-transparent`}
+        } fixed z-10 cursor-default top-0 left-0 w-screen h-[100dvh] bg-transparent`}
       ></div>
     </header>
   );

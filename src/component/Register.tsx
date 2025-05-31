@@ -78,7 +78,7 @@ export const Register = (props: registerType) => {
         id="register"
         className={`${
           props.register ? "flex" : "hidden"
-        } fixed  justify-center items-center top-0 w-[100dvw] h-[100dvh] left-0 bg-[#FFFFFF20]`}
+        } fixed  justify-center items-center top-0 w-[100dvw] h-[h-[100dvh]] left-0 bg-[#FFFFFF20]`}
       >
         
         <div className="bg-[#15202B] pt-2 sm:pt-4 px-4 sm:px-10  rounded-lg sm:w-[500px]  flex items-center flex-col w-full h-full sm:h-auto">
@@ -92,7 +92,7 @@ export const Register = (props: registerType) => {
               Create your account
             </h1>
             <form onSubmit={formik.handleSubmit}>
-              <div className="min-h-[calc(100dvh-180px)] sm:min-h-auto sm:mb-10">
+              <div className="min-h-[calc(h-[100dvh]-180px)] sm:min-h-auto sm:mb-10">
                 <Input
                   title="Username"
                   name="username"

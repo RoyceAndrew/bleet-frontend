@@ -55,7 +55,7 @@ export const Footer = () => {
     }, [search]);
 
     return (
-        <footer className="lg:flex flex-col hidden w-[250px] sticky top-0 100dvh ml-4 pt-4 bg-[#15202B] text-white">
+        <footer className="lg:flex flex-col hidden w-[250px] sticky top-0 h-[100dvh] ml-4 pt-4 bg-[#15202B] text-white">
             <div className="fixed w-[250px]">
             <input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search users" className="w-full  focus:outline-none ring-1 ring-slate-700 rounded-lg p-2 mb-2" />
             <div className={`${results.length > 0 ? "block" : "hidden"} ring-1 bg-[#15202B] z-20 shadow-[0_0_10px] shadow-white ring-slate-700 rounded-lg`}>

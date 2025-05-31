@@ -57,7 +57,7 @@ export const Login = (props: loginType) => {
       <div
         className={` ${
           props.login ? "fixed" : "hidden"
-        } fixed w-screen 100dvh top-0 left-0 bg-[#FFFFFF20] flex justify-center items-center`}
+        } fixed w-screen h-[100dvh] top-0 left-0 bg-[#FFFFFF20] flex justify-center items-center`}
       >
         <div
           className={` bg-[#15202B] pt-2 sm:pt-4 px-4 sm:px-10  rounded-lg sm:w-[450px]  flex items-center flex-col w-full h-full sm:h-auto`}

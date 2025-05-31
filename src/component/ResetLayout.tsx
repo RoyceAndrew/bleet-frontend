@@ -5,7 +5,7 @@ export const ResetLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <section
       id="forgotpass"
-      className="flex justify-center w-screen h-[100dvh]  bg-[#15202B]"
+      className="flex justify-center w-screen h-[h-[100dvh]]  bg-[#15202B]"
     >
       <ToastContainer
           position="top-center"
@@ -20,7 +20,7 @@ export const ResetLayout = ({ children }: { children: React.ReactNode }) => {
           theme="dark"
           transition={Bounce}
         />
-      <div className="fixed w-screen 100dvh top-0 left-0 bg-[#FFFFFF20] flex justify-center items-center">
+      <div className="fixed w-screen h-[100dvh] top-0 left-0 bg-[#FFFFFF20] flex justify-center items-center">
         <div className="bg-[#15202B] pt-2 sm:pt-4 px-4  sm:px-16 sm:h-[80%] rounded-lg sm:w-[90%] sm:max-w-[800px]  flex items-center flex-col w-full h-full">
           <Link
             className="sm:static  absolute sm:mb-[-40px] sm:ml-[-110%] top-3 left-3"

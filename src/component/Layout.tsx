@@ -5,7 +5,7 @@ import { Footer } from "./Footer";
 export const Layout = () => {
     return (
         
-           <div className="flex justify-center min-h-[100dvh] min-w-full bg-[#15202B]">
+           <div className="flex justify-center min-h-[h-[100dvh]] min-w-full bg-[#15202B]">
             <Nav />
             <main className="w-[600px] ring-1 ring-slate-700">
             <Outlet />

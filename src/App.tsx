@@ -46,7 +46,7 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center flex-col items-center gap-4 100dvh w-screen bg-[#15202B]">
+      <div className="flex justify-center flex-col items-center gap-4 h-[100dvh] w-screen bg-[#15202B]">
         <img src="/pct/bleetlogo.png" className="w-[100px] mr-[-20px]" alt="Bleet"/>
         <BeatLoader color="white" size={20} />
       </div>
