@@ -10,7 +10,9 @@ import { useUpload } from "../hook/useUpload";
 import { HomePost } from "../component/HomePost";
 import { useProfilePost } from "../hook/useProfilePost";
 import { useParams } from "react-router";
+import { ProfileReply } from "../component/ProfileReply";
 import { useNavigate } from "react-router";
+import axios from "axios";
 
 interface userType {
   displayname: string;
@@ -25,12 +27,14 @@ export const Profile = () => {
   const navigate = useNavigate();
   const { profile } = useParams();
   const user = useUser((state: any) => state.user);
+  const profileUser = useProfilePost((state: any) => state.profileUser);
   const [edit, setEdit] = useState(false);
   const editUser = useUser((state: any) => state.editUser);
   const [date, setDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [website, setWebsite] = useState("");
+  const [profileLoading, setProfileLoading] = useState(false);
   const [image, setImage] = useState(null);
   const [active, setActive] = useState("");
   const comment = useProfilePost((state: any) => state.comments);
@@ -39,6 +43,9 @@ export const Profile = () => {
   const [cropBanner, setCropBanner] = useState<string | null>(null);
   const [previewBanner, setPreviewBanner] = useState(null);
   const [cropImage, setCropImage] = useState<string | null>(null);
+  const [followLoading, setFollowLoading] = useState(false);
+  const following = useProfilePost((state: any) => state.following);
+  const follower = useProfilePost((state: any) => state.follower);
   const getData = useProfilePost((state: any) => state.getProfilePosts);
   const posts = useProfilePost((state: any) => state.posts);
   const isloading = useProfilePost((state: any) => state.isLoading);
@@ -106,8 +113,12 @@ export const Profile = () => {
     );
   }, []);
 
+  const useMountEffect = (fun:any) => useEffect(fun, [profile]);
+
+
   useEffect(() => {
     if (!page) {
+      
       setActive("posts");
     } else if (page === "replies") {
       setActive("replies");
@@ -144,6 +155,34 @@ export const Profile = () => {
     reader.readAsDataURL(file);
   }
 
+  useMountEffect(() => {
+    console.log(profile);
+    const callApi = async () => {
+      setProfileLoading(true);
+      await getData(profile);
+      setProfileLoading(false);
+    }
+    callApi();
+  })
+
+  const handleFollow = async (following: string) => {
+  try {
+    setFollowLoading(true); 
+    await axios.post(
+      import.meta.env.VITE_REACT_APP_BACKEND_URL + `/api/user/follow`, 
+      {following}, 
+      { withCredentials: true }
+    );
+
+    await getData(profile);
+    setFollowLoading(false);
+    
+  } catch(err) {
+    console.log(err);
+    setFollowLoading(false);
+  }
+}
+
   function handleBannerChange(e: any) {
     const file = e.target.files[0];
     if (!file) return;
@@ -154,46 +193,54 @@ export const Profile = () => {
     };
     reader.readAsDataURL(file);
   }
+  if (profileLoading) {
+    return <div className="w-full h-screen flex justify-center items-center"><BeatLoader color="white" /></div>
+  }
+
+  const isFollowing = Array.isArray(follower) && follower.some((f: any) => f.user_id === user.id);
 
   return (
     <section id="profile" className="w-full">
       <img
-        src={user.banner}
+        src={profileUser.banner}
         alt="banner"
-        className="w-full relative z-0  h-[200px] object-cover"
+        className="w-full relative z-0  h-[200px] object-cover object-center"
       />
+      <div className="flex mb-9 justify-between w-full">
       <img
-        src={user.profilePicture}
+        src={profileUser.profilePicture}
         alt="profile"
-        className="rounded-full relative  w-[130px] ml-[15px] z-20 ring-4 ring-[#15202B] mt-[-65px] h-[130px] object-cover"
+        className="rounded-full relative w-[100px] h-[100px] mt-[-50px] md:w-[130px] ml-[15px] z-20 ring-4 ring-[#15202B] md:mt-[-65px] md:h-[130px] object-cover"
       />
-      <button
+      {profileUser.username === user.username ? <button
         onClick={() => setOpen(true)}
-        className="text-white relative top-[-50px] cursor-pointer hover:bg-slate-800 right-[-70%] sm:right-[-77%] ring-1 ring-slate-700 px-5 py-1 rounded-2xl z-30"
+        className="text-white relative mt-[10px] text-sm md:text-base mr-[10px] h-[30px]  cursor-pointer hover:bg-slate-800  ring-1 ring-slate-700 px-5 py-1 rounded-2xl z-30"
       >
+  
         Edit profile
-      </button>
+      </button> : <button disabled={followLoading || profileLoading}  onClick={() => handleFollow(profileUser.id)} className={`relative text-sm md:text-base hover:bg-slate-400 mt-[10px] mr-[10px]   h-[30px]   px-5 py-1 rounded-2xl ${followLoading || profileLoading ? "bg-slate-400 cursor-not-allowed" : "bg-white cursor-pointer"} `}>{isFollowing ? "Following" : "Follow"}</button>}
+     </div>
       <div className=" pb-0 mt-[-30px] border-b border-slate-700">
         <div className="mx-[15px] mt-[15px]">
-        <h1 className="text-2xl text-white font-semibold">
-          {user.displayname}
+        <h1 className="lg:text-2xl md:text-xl text-lg text-white font-semibold">
+          {profileUser.displayname}
         </h1>
-        <h2 className="text-slate-400 text-sm">{"@" + user.username}</h2>
-        {user.bio && (
-          <p className="text-sm break-words text-white">{user.bio}</p>
+        <h2 className="text-slate-400 text-sm">{"@" + profileUser.username}</h2>
+        {profileUser.bio && (
+          <p className="text-sm break-words text-white">{profileUser.bio}</p>
         )}
         <div className="flex gap-3">
-          {user.website && (
+          {profileUser.website && (
             <p className="text-slate-400 text-sm">
               <i className="bi  bi-link-45deg"></i>{" "}
               <a
                 target="_blank"
                 className="hover:underline text-blue-500"
                 href={
-                  user.website.includes("https://") ||
-                  user.website.includes("http://")
-                    ? user.website
-                    : "https://" + user.website
+                  profileUser.website.includes("https://") ||
+                  profileUser.website.includes("http://")
+                    ? profileUser.website
+                    : "https://" + profileUser.website
                 }
               >
                 {website}
@@ -205,12 +252,15 @@ export const Profile = () => {
             <i className="bi bi-calendar4-week"></i> Joined {date}
           </p>
           </div>
+          <div className="flex gap-3">
+          <p onClick={() => navigate("/" + profileUser.username + "/f/following")} className="text-slate-400 cursor-pointer hover:underline decoration-white decoration-2 text-sm"><span className="text-white">{following.filter((f: any) => f.user_id === profileUser.id).length || 0}</span> Following</p> <p onClick={() => navigate("/" + profileUser.username + "/f/followers")} className="text-slate-400 cursor-pointer hover:underline decoration-white decoration-2 text-sm"><span className="text-white">{follower.filter((f: any) => f.following_id === profileUser.id).length || 0}</span> Followers</p>
+          </div>
         </div>
         <div className="flex justify-between">
-            <div onClick={() => navigate("/" + user.username)} className="w-1/2 flex justify-center cursor-pointer hover:bg-slate-700">
+            <div onClick={() => navigate("/" + profileUser.username)} className="w-1/2 flex text-sm md:text-md lg:text-lg justify-center cursor-pointer hover:bg-slate-700">
             <p className={` py-1 px-2 ${active === "posts" ? " border-b-4 text-white border-blue-500" : "text-slate-400 border-b-0"}`}>Post</p>
             </div>
-            <div onClick={() => navigate("/" + user.username + "/replies")} className={`w-1/2 flex justify-center cursor-pointer hover:bg-slate-700`}>
+            <div onClick={() => navigate("/" + profileUser.username + "/replies")} className={`w-1/2 flex text-sm md:text-md lg:text-lg justify-center cursor-pointer hover:bg-slate-700`}>
             <p className={` py-1 px-2 ${active === "replies" ? " border-b-4 text-white border-blue-500" : "text-slate-400 border-b-0"}`}>Reply</p>
             </div>
         </div>
@@ -251,7 +301,7 @@ export const Profile = () => {
 
           <div>
             <img
-              src={cropBanner || user.banner}
+              src={cropBanner || profileUser.banner}
               alt="banner"
               className="w-full z-0 relative h-[200px] object-cover"
             />
@@ -273,7 +323,7 @@ export const Profile = () => {
           </div>
           <div>
             <img
-              src={cropImage || user.profilePicture}
+              src={cropImage || profileUser.profilePicture}
               alt="profile"
               className="rounded-full  relative w-[130px] ml-[15px]  ring-4 ring-[#15202B] mt-[-65px] h-[130px] object-cover"
             />
@@ -362,7 +412,7 @@ export const Profile = () => {
           />
         )}
       </div>
-      <HomePost getData={getData} profile={profile} posts={posts} loading={isloading} fill={true} comment={comment}/>
+      {active === "posts" ? <HomePost title={user.displayname + " (@" + user.username + ")"} getData={getData} profile={profile} posts={posts} loading={isloading} fill={true} comment={comment}/> : <ProfileReply/>}
     </section>
   );
 };

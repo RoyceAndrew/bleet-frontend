@@ -2,11 +2,52 @@ import { Register } from "../component/Register";
 import { Login } from "../component/Login";
 import { useEffect, useState } from "react";
 import { ToastContainer, Bounce } from "react-toastify";
+import { supabase } from "../service/supabaseClient";
+import axios from "axios";
+import { BeatLoader } from "react-spinners";
 
 export const Flow = () => {
   const [login, setLogin] = useState(false);
   const [register, setRegister] = useState(false);
   const [direct, setDirect] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+    });
+  };
+
+  useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setLoading(true);
+        if (event === "SIGNED_IN" && session?.user) {
+          const user = session.user;
+
+          try {
+            await axios.post(
+              import.meta.env.VITE_REACT_APP_BACKEND_URL +
+                "/api/user/loginGoogle",
+              { user },
+              { withCredentials: true }
+            );
+
+            localStorage.removeItem("sb-evardcsgulwzvbjwcokb-auth-token");
+            window.location.reload();
+            setLoading(false);
+          } catch (err) {
+            console.error("Gagal login Google ke backend", err);
+            setLoading(false);
+          }
+        }
+      }
+    );
+
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     if (direct === "login") {
@@ -19,6 +60,10 @@ export const Flow = () => {
     }
     setDirect("");
   }, [direct]);
+
+  if (loading && localStorage.getItem("sb-evardcsgulwzvbjwcokb-auth-token")) {
+    return <div className="flex justify-center bg-[#15202B] items-center w-[100vw] h-[100vh]"><BeatLoader color="white" /></div>;
+  }
 
   return (
     <>
@@ -67,6 +112,7 @@ export const Flow = () => {
             <p className="text-white font-semibold sm:mt-6 sm:mb-3">
               Already have an account?
             </p>
+            <button className="flex w-[250px] text-black bg-white  items-center h-[35px] rounded-3xl cursor-pointer mb-4 hover:bg-slate-300 justify-center gap-2" onClick={handleLogin}><img width="26" height="26" src="https://img.icons8.com/color/48/google-logo.png" alt="google-logo"/>Sign in with Google</button>
             <button
               onClick={() => setLogin(true)}
               className={` text-blue-400 ring-1 hover:bg-[#86ebff05] ring-slate-500 w-[250px] rounded-3xl h-[35px] cursor-pointer  text-md font-bold `}

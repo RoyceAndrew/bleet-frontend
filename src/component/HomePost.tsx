@@ -1,36 +1,59 @@
-import { useEffect, useRef } from "react";
+import {  useEffect, useRef } from "react";
 import { useProfilePost } from "../hook/useProfilePost";
 import { useUser } from "../hook/useUser";
 import { BeatLoader } from "react-spinners";
 import { useState } from "react";
-import { formatDistance } from "date-fns";
+import { formatDistance} from "date-fns";
 import useGetPosts from "../hook/useGetPosts";
 import { useLike } from "../hook/useLike";
 import { useLikeList } from "../hook/useLikeList";
-import { useLocation } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { useNavigate } from "react-router";
 import { PostInput } from "./PostInput";
 import { upComment } from "../hook/useComment";
 import { useCommentList } from "../hook/useCommentList";
+import { useProfileReply } from "../hook/useProfileReply";
+import { ProfileHover } from "./ProfileHover";
+import { TextareaAutosize, CircularProgress } from "@mui/material";
+import axios from "axios"; 
+import { toast, ToastContainer, Bounce } from "react-toastify";
 
 interface Props {
   posts: any;
   getData: any;
-  loading: any;
+  loading?: any;
   stream?: any;
   fill: boolean;
   profile?: string;
-  comment: any;
+  comment?: any;
+  delete?: React.Dispatch<any>;
+  isReply?: boolean;
+  double?: boolean;
+  title?: string;
+  profileReply?: boolean;
+  noHover?: boolean;
+  noLoading?: boolean;
+  pathname?: string;
 }
 
 export const HomePost = (props: Props) => {
   const navigate = useNavigate();
+  const [commentHover, setCommentHover] = useState<string | null>(null);
+  const deleteReply = useProfileReply((state: any) => state.deleteReplies);
   const user = useUser((state: any) => state.user);
   const page = useLocation();
+  const params = useParams().postId;
   const [hover, setHover] = useState<string | null>();
+  const [text, setText] = useState("");
   const fatched = useRef(false);
   const closeStream = useGetPosts((state: any) => state.closeEvent);
+  const [reportLoading, setReportLoading] = useState(false);
+  const [report, setReport] = useState<string | null>(null);
+  const [hoverProfile, setHoverProfile] = useState<string | null>(null);
+  const [hoverDisplayName, setHoverDisplayName] = useState<string | null>(null);
+  const [hoverUsername, setHoverUsername] = useState<string | null>(null);
   const deletePost = useProfilePost((state: any) => state.deleteProfilePost);
+  const hoverRef = useRef<NodeJS.Timeout | null>(null);
   const [open, setOpen] = useState<number | null>(null);
   const deletePosts = useGetPosts((state: any) => state.deletePost);
   const likeList = useLikeList((state: any) => state.likeList);
@@ -49,10 +72,14 @@ export const HomePost = (props: Props) => {
 
   useEffect(() => {
     const checkLike = async () => {
-      setLoading(true);
-      if (props.profile) {
-        await props.getData(props.profile);
-      } else if (!props.profile) {
+      if (!props.noLoading) {
+        setLoading(true);
+      }
+      document.title = props.title ? props.title + " / Bleet" : "Bleet";
+      // if (props.profile) {
+      //   await props.getData(props.profile);
+      // } else 
+      if (!props.profile) {
         await props.getData();
       }
       const result = await useLike();
@@ -72,9 +99,23 @@ export const HomePost = (props: Props) => {
   }, [user, page, fatched]);
 
   useEffect(() => {
+    fatched.current = false;
+  }, [props.pathname]);
+
+  useEffect(() => {
+    if (report) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [report]);
+
+  useEffect(() => {
+    if (props.double) return 
     if (props.comment) {
       updateCommentList(props.comment);
     }
+    console.log(commentList)
   }, [props.comment]);
 
   if (props.loading || loading) {
@@ -87,9 +128,15 @@ export const HomePost = (props: Props) => {
 
   function handleDelete(id: string) {
     deletePost({ postId: id });
+    if (props.delete) {
+      props.delete((prev: any) => prev.filter((post: any) => post.id !== id));
+    }
+    deleteReply( id );
     deletePosts({ postId: id });
     setOpen(null);
   }
+
+  
 
   function date(date: any) {
     const newDate = new Date(date);
@@ -145,6 +192,7 @@ export const HomePost = (props: Props) => {
   };
 
   const openDetail = (postId: string) => {
+    if (params === postId) return;
     navigate(`/post/${postId}`);
   };
 
@@ -160,25 +208,144 @@ export const HomePost = (props: Props) => {
     setOpenComment(postId);
   };
 
+  const handleMouseHover = (id: string | null, type: "profile" | "displayName" | "username") => {
+    if (hoverRef.current) {
+      clearTimeout(hoverRef.current);
+    }
+   if (typeof id === "string" && type === "profile") {
+    setHoverProfile(id);
+    setHoverDisplayName(null);
+    setHoverUsername(null);
+   }
+   if (typeof id === "string" && type === "displayName") {
+    setHoverDisplayName(id);
+    setHoverUsername(null);
+    setHoverProfile(null);
+   }
+   if (typeof id === "string" && type === "username") {
+    setHoverUsername(id);
+    setHoverDisplayName(null);
+    setHoverProfile(null);
+   }
+   if (typeof id !== "string") {
+    hoverRef.current =  setTimeout(() => {
+      setHoverProfile(null);
+      setHoverDisplayName(null);
+      setHoverUsername(null);
+    }, 300);
+   }
+}
+
+const submitReport = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  try {
+   if (text.length < 5) return alert("Please enter more than 5 characters");
+   setReportLoading(true);
+   await axios.post(import.meta.env.VITE_REACT_APP_BACKEND_URL + `/api/post/report`, {text, postId: report}, {withCredentials: true}); 
+   setReport(null);
+   setText("");
+   setReportLoading(false);
+   toast.success("Report submitted successfully");
+  } catch (error) {
+    console.log(error)
+  }
+}
+
   return (
     <>
+    <ToastContainer
+        position="top-right"
+        autoClose={6000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={true}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition={Bounce}
+      />
+    {report && <div onClick={(e) =>{e.stopPropagation(); setReport(null); setText("")}} className="fixed flex top-0 left-0 w-screen h-screen z-[9999] justify-center bg-[#FFFFFF50]">
+                <form
+          onSubmit={(e) => submitReport(e)}
+          onClick={(e) => e.stopPropagation()}
+          className="md:w-[500px] md:h-fit h-full w-full z-[100] bg-[#15202B] md:rounded-xl md:mt-[3%] flex flex-col"
+        > 
+          <div className="flex items-center justify-between p-2">
+            <p className="text-white text-md md:text-lg">Gathering info</p>
+            <i
+              onClick={() => setReport(null)}
+              className="text-slate-500 hover:bg-blue-200 cursor-pointer p-0.5 px-1.5 rounded-full bi bi-x-lg"
+            ></i>
+          </div>
+        <TextareaAutosize
+        onChange={(e) => setText(e.target.value)}
+              value={text}
+              name="text"
+              maxLength={280}
+              minRows={4}
+              placeholder={"What's wrong with this post?"}
+              style={{
+                width: "100%",
+                color: "white",
+                border: "none",
+                outline: "none",
+                paddingLeft: "8px",
+               
+                paddingRight: "15px",
+                paddingBottom: "15px",
+                resize: "none",
+              }}
+        />
+        <div className="flex justify-between border-t border-slate-700 py-2 mx-4">
+                    <div>
+                    </div>
+                    <div className="flex">
+                      <CircularProgress
+                        variant="determinate"
+                        size={25}
+                        value={Math.round(text.length * 100 / 280)}
+                        color={
+                          text.length * 100 / 280 === 100 ? "error" : "primary"
+                        }
+                      />
+                      <button
+                        disabled={reportLoading || text.length < 5}
+                        type="submit"
+                        className={`py-0.5 ml-3 px-3.5  rounded-2xl flex items-center justify-center  text-black transition-colors duration-300 ease-out text-md hover:bg-slate-400 rounded-full[35px] ${reportLoading || text.length < 5 ? "cursor-not-allowed bg-slate-400" : "cursor-pointer bg-white"}`}
+                      >
+                        {reportLoading ? <BeatLoader color="black" size={8} /> : "Report"}
+                      </button>
+                    </div>
+                  </div>
+        </form>
+              </div>}
       {props.posts.map((post: any) => (
         <div
           onClick={() => openDetail(post.id)}
-          className={`flex p-3 text-wrap whitespace-normal break-words border-b border-slate-700 hover:bg-slate-800 cursor-pointer`}
-          key={post.id}
+          className={`flex pl-3 pt-3  pr-3 text-wrap whitespace-normal break-words ${open ? " " : "hover:bg-slate-800" } ${props.isReply && post.id !== params ? "pb-[0px] cursor-pointer" : "border-b border-slate-700 pb-3"} ${!props.isReply && !props.noHover && !open  && "hover:bg-slate-800 cursor-pointer"} ${props.noHover && "cursor-pointer"}  `}
+          key={props.profileReply ? post.id + post.post.id : post.id}
         >
           <img
-            className="h-[50px] w-[50px] object-cover rounded-full"
+            onClick={(e) => {e.stopPropagation(); navigate(`/${post.user.username}`)}}
+            onMouseOver={() => handleMouseHover(post.id, "profile")}
+            onMouseLeave={() => handleMouseHover(null, "profile")}
+            className="h-[40px] w-[40px] md:h-[50px] md:w-[50px] object-cover cursor-pointer z-20 rounded-full"
             src={post.user.profilePicture}
           />
-          <div className="ml-[10px] text-wrap whitespace-normal break-words w-full text-white flex flex-col">
+          <ProfileHover className="mt-[60px] ml-[-80px]" animation={hoverProfile === post.id} user={post.user} profile={true} handleMouseHover={handleMouseHover} post={post}/>
+          <div className={`${ props.isReply && post.id !== params ? "ml-[-26px] mb-[-12px] pl-[30px] border-l-2 border-slate-400" : "ml-[10px]"}  text-wrap whitespace-normal break-words w-full text-white flex flex-col`}>
             <div className="flex justify-between w-full items-center">
-              <div className="flex">
-                <p>{post.user.displayname}</p>
-                <p className="text-slate-500 ml-2">@{post.user.username}</p>
+              <div className="flex w-full flex-nowrap">
+                <p onClick={(e) => {e.stopPropagation(); navigate(`/${post.user.username}`)}} onMouseOver={() => handleMouseHover(post.id, "displayName")} onMouseLeave={() => handleMouseHover(null, "displayName")} className="hover:underline cursor-pointer truncate text-sm md:text-md lg:text-lg decoration-2">{post.user.displayname}</p>
+                <ProfileHover className="mt-[28px] ml-[-60px]" animation={hoverDisplayName === post.id} displayName={true} user={post.user} handleMouseHover={handleMouseHover} post={post}/>
+                <div className="flex-shrink min-w-0">
+                <p onClick={(e) => {e.stopPropagation(); navigate(`/${post.user.username}`)}} onMouseOver={() => handleMouseHover(post.id, "username")} onMouseLeave={() => handleMouseHover(null, "username")} className="text-slate-500 cursor-pointer   truncate text-sm md:text-md lg:text-lg ml-2">@{post.user.username}</p>
+                <ProfileHover className="ml-[-45px] mt-[3px]" animation={hoverUsername === post.id} username={true} user={post.user} handleMouseHover={handleMouseHover} post={post}/>
+                </div>
                 <i className="bi bi-dot text-slate-500"></i>
-                <p className="text-slate-500">{date(post.created_at)}</p>
+                <p className="text-slate-500 text-sm md:text-md lg:text-lg  flex-shrink-0">{date(post.created_at)}</p>
               </div>
               <i
                 onClick={(e) => openCheck(e, post.id)}
@@ -188,9 +355,9 @@ export const HomePost = (props: Props) => {
                 onClick={(e) => e.stopPropagation()}
                 className={`${
                   open === post.id ? "block" : "hidden"
-                } z-[100] absolute ml-[310px] mt-[90px] rounded-xl bg-[#15202B] w-[200px] shadow-[0px_0px_6px_4px_#314158]  h-[100px]`}
+                } z-[100] absolute max-lg:right-[10px]   lg:ml-[310px] mt-[20px] rounded-xl bg-[#15202B] w-[200px] shadow-[0px_0px_6px_4px_#314158]  h-fit`}
               >
-                {user.id === post.user_id && (
+                {user.id === post.user_id ? (
                   <div
                     onClick={() => handleDelete(post.id)}
                     className="flex items-center p-2 hover:bg-slate-700 cursor-pointer"
@@ -198,8 +365,17 @@ export const HomePost = (props: Props) => {
                     <i className="bi text-red-500 bi-trash mr-2"></i>
                     <p className="text-red-500">Delete</p>
                   </div>
+                ) : (
+                  <div
+                    onClick={() => {setReport(post.id); setOpen(null)}}
+                    className="flex items-center p-2 hover:bg-slate-700 cursor-pointer"
+                  >
+                    <i className="bi text-red-500 bi-flag mr-2"></i>
+                    <p className="text-red-500">Report</p>
+                  </div>
                 )}
               </div>
+              
               <div
                 onClick={(e) => openCheck(e, post.id)}
                 className={`fixed z-[99] w-screen h-screen top-0 left-0 ${
@@ -207,10 +383,10 @@ export const HomePost = (props: Props) => {
                 }`}
               ></div>
             </div>
-            <p className="break-all mt-[-5px] whitespace-normal max-w-[500px]">
+            <p className="break-all mt-[-5px] text-sm md:text-md lg:text-lg whitespace-normal max-w-[500px]">
               {post.text}
             </p>
-            <div className="mt-2 flex">
+            <div className="mt-1 flex">
               <button
                 onClick={(e) => handleLike(e, post)}
                 onMouseOver={() => setHover(post.id)}
@@ -221,7 +397,7 @@ export const HomePost = (props: Props) => {
                 className="flex w-min ml-[-5px] hover:text-red-500 duration-300 hover:bg-[#fb2c3640] py-1 px-2 rounded-2xl cursor-pointer items-center"
               >
                 <i
-                  className={`bi  transition-colors duration-300 mr-1 ${
+                  className={`bi text-sm md:text-md lg:text-lg  transition-colors duration-300 mr-1 ${
                     likeList.find((data: any) => data.post_id === post.id) ||
                     hover === post.id
                       ? " text-red-500 "
@@ -233,7 +409,7 @@ export const HomePost = (props: Props) => {
                   } `}
                 ></i>
                 <p
-                  className={`duration-300 ${
+                  className={`text-sm md:text-md lg:text-lg duration-300 ${
                     likeList.find((data: any) => data.post_id === post.id) ||
                     hover === post.id
                       ? " text-red-500"
@@ -250,11 +426,13 @@ export const HomePost = (props: Props) => {
                 </p>
               </button>
               <button
+                onMouseOver={() => setCommentHover(post.id)}
+                onMouseLeave={() => setCommentHover(null)}
                 onClick={(e) => handleComment(e, post)}
-                className="flex text-slate-400 w-min ml-4 hover:text-green-400 duration-300 hover:bg-green-950 py-1 px-2 rounded-2xl cursor-pointer items-center"
+                className="flex text-slate-400 w-min ml-4 hover:text-green-500 duration-300 hover:bg-green-950 py-1 px-2 rounded-2xl cursor-pointer items-center"
               >
-                <i className={`mr-1 bi ${commentList.find((data: any) => data.user_id === user.id && data.reply_to === post.id) ? "text-green-400 bi-chat-fill" : "text-slate-400 bi-chat"}`}></i>
-                <p className={`${commentList.find((data: any) => data.user_id === user.id && data.reply_to === post.id) ? "text-green-400" : "text-slate-400"}`}>
+                <i className={`mr-1 text-sm md:text-md lg:text-lg  bi ${commentList.find((data: any) => data.user_id === user.id && data.reply_to === post.id) ? "bi-chat-fill" : "bi-chat"} ${commentList.find((data: any) => data.user_id === user.id && data.reply_to === post.id) || commentHover === post.id ? "text-green-500 " : "text-slate-400 "}`}></i>
+                <p className={`text-sm md:text-md lg:text-lg ${commentList.find((data: any) => data.user_id === user.id && data.reply_to === post.id) || commentHover === post.id ? "text-green-500" : "text-slate-400"}`}>
                   {Array.isArray(commentList)
                     ? commentList.filter(
                         (data: any) => data.reply_to === post.id
@@ -262,9 +440,10 @@ export const HomePost = (props: Props) => {
                     : 0}
                 </p>
               </button>
+              </div>
             </div>
           </div>
-        </div>
+          
       ))}
       <PostInput
         comment={true}
@@ -272,6 +451,7 @@ export const HomePost = (props: Props) => {
         open={openComment}
         setOpen={setOpenComment}
       />
+      
       {props.fill && <div className="h-[50vh]"></div>}
     </>
   );

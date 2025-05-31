@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";
 import { NavRoute } from "./NavRoute";
 import { useUser } from "../hook/useUser";
-import { TextareaAutosize, CircularProgress } from "@mui/material";
 import { usePost } from "../hook/usePost";
-import { BeatLoader } from "react-spinners";
 import { useProfilePost } from "../hook/useProfilePost";
 import useGetPosts from "../hook/useGetPosts";
 import { PostInput } from "./PostInput";
@@ -19,22 +17,44 @@ export const Nav = () => {
   const [fill, setFill] = useState(location);
   const [dot, setDot] = useState('');
   const [userdot, setUserDot] = useState('');
-  const [open, setOpen] = useState(false);
-  const [text, setText] = useState('');
-  const [loading, setLoading] = useState(false);
-  const getData = useProfilePost((state: any) => state.getProfilePosts)
+  const [open, setOpen] = useState<boolean | string | null>(false);
   const logOutProfilePost = useProfilePost((state: any) => state.logout);
   const logOutGetPosts = useGetPosts((state: any) => state.logout);
-  const getAllPosts = useGetPosts((state: any) => state.getPosts);
+  const [explore, setExplore] = useState(false);
+  const [followPage, setFollowPage] = useState(false);
 
   useEffect(() => {
     setFill(location);
     if (profile === user.username) {
       setCheckProfile(true);
+      
     } else {
       setCheckProfile(false);
     }
+    if (location === "/following") {
+      setFollowPage(true);
+    } else {
+      setFollowPage(false);
+    }
   }, [location]);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setExplore(false);
+      } else {
+        setExplore(true);
+      }
+    }
+    
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+  }, []);
 
   useEffect(() => {
     if (user.displayname.length > 10) {
@@ -56,36 +76,25 @@ export const Nav = () => {
     logOutGetPosts();
   };  
 
-  const submit = async (e: any) => {
-     e.preventDefault();  
-     setLoading(true);
-    const data = {
-       text: text
-     }
-     const result = await usePost(data);
-     if (!result.success) {
-      console.log(result.message);
-       setLoading(false);
-       return
-     }
-     getData()
-     getAllPosts()
-     setOpen(false);
-     setText('');
-     setLoading(false);
-  }
-
   return (
-    <header className="flex md:w-[250px] h-screen sticky z-50 top-0 bottom-0 md:mr-4 ml-2 mr-1 flex-col items-end md:items-start justify-between">
+    <header className="flex md:w-[250px] h-screen sticky z-[110] top-0 bottom-0 md:mr-4 ml-2 mr-1 flex-col items-end md:items-start justify-between">
       <nav className="w-full flex flex-col items-end md:items-start">
         <img src="/pct/bleetlogo.png" alt="bleet-logo" className="h-[40px] mr-1 md:mr-0" />
         <NavRoute
           to="/home"
           fill={fill}
+          follow={followPage} 
           icon="bi-house-door"
           iconActive="bi-house-door-fill"
           text="Home"
         />
+        {!explore && <NavRoute
+          to={"/explore"} 
+          fill={fill}
+          icon="bi-search"
+          iconActive="bi-search-heart"
+          text="Explore"
+        />}
         <NavRoute
           to={"/" + user.username} 
           fill={fill}

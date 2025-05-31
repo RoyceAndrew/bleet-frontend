@@ -17,15 +17,18 @@ export const Post = () => {
     const [focus, setFocus] = useState(false);
     const [commentList, setCommentList] = useState<any>(null);
     const [loadingComment, setLoadingComment] = useState(false);
+    const [commentCount, setCommentCount] = useState<any[] | null>(null);
     const navigate = useNavigate(); 
     
     useEffect(() => {
       const fetchApi = async () => {
+        setCommentCount(null);
         setLoading(true);
         const result = await useDetailPost(postId);
-        setPost(result.message);
+        setPost(result.message.chain);
         const resultComment = await getComment(postId);
         setCommentList(resultComment.message);
+        setCommentCount([...result.message.comments, ...resultComment.comments]);;
         setLoading(false);
       }
       fetchApi();
@@ -38,6 +41,14 @@ export const Post = () => {
         setLoadingComment(true);
       }
     }, [comment]);
+
+    useEffect(() => {
+      if (focus) {
+        setLoadingComment(true);
+      } else {
+        setLoadingComment(false);
+      }
+    }, [focus]);
 
     const handleSubmit = async (e: any) => {
       e.preventDefault();
@@ -69,10 +80,10 @@ export const Post = () => {
       <i onClick={() => navigate(-1)} className="bi text-white ml-5 mr-5 hover:bg-slate-700 cursor-pointer  px-2 py-1 rounded-full text-lg bi-arrow-left"></i>
         <h2 className="text-white text-md">Post</h2>
       </div>
-      <HomePost posts={[post]} loading={loading} getData={() => {}} fill={false}/>
+      <HomePost posts={post} loading={loading} comment={commentCount} getData={() => {}} isReply={true} fill={false}/>
       <form onSubmit={(e) => handleSubmit(e)} className={`flex border-0 p-3 border-b transition-all duration-300 ease-out border-slate-700 ${focus ? 'flex-col items-end' : 'flex-row items-center'}`}>
        <div className="flex w-full">
-       <img src={user.profilePicture} alt="" className="w-[50px] h-[50px] object-cover rounded-full" />
+       <img src={user.profilePicture} alt="" className="md:w-[50px] h-[40px] w-[40px] md:h-[50px] object-cover rounded-full" />
        <TextareaAutosize onClick={() => setFocus(true)} style={{width: '100%', color: 'white', border: 'none', outline: 'none', padding: '15px', resize: 'none'}} name="comment" value={comment} maxLength={280} onChange={(e) => setComment(e.target.value)} placeholder="Post your reply"/>
        </div>
        <div className="flex gap-2 items-center">
@@ -80,7 +91,8 @@ export const Post = () => {
        <button type="submit" disabled={loadingComment} className={` text-sm rounded-full px-3 py-1 h-min ${loadingComment ? 'cursor-not-allowed bg-slate-500' : 'cursor-pointer bg-white'}`}>Reply</button>
        </div>
       </form>
-      <HomePost posts={commentList} loading={loading} getData={getComment} fill={true}/>
+      
+      <HomePost posts={commentList} double={true} loading={loading} getData={getComment} delete={setCommentList} fill={true}/>
     </>)
     }
 }

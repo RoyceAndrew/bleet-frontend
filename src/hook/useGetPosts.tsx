@@ -1,10 +1,12 @@
 import { create } from "zustand";
 import axios, { AxiosError } from "axios";
 
-const useGetPosts = create<any>((set, get) => ({
+const useGetPosts = create<any>((set) => ({
     posts: [],
     isLoading: true,
     comments: [],
+    follower: [],
+    following: [],
     eventSource: null,
 
     getPosts: async () => {
@@ -14,8 +16,7 @@ const useGetPosts = create<any>((set, get) => ({
             });
             const result = response.data.posts;
             const comments = response.data.comments;
-            console.log(comments)
-            set({ posts: result, comments: comments, isLoading: false });
+            set({ posts: result, comments: comments, follower: response.data.followers, following: response.data.following, isLoading: false });
         } catch (error: unknown | Error | AxiosError) {
             if (error instanceof AxiosError) {
                 console.log(error);
@@ -24,49 +25,24 @@ const useGetPosts = create<any>((set, get) => ({
             }
         }
     },
-    // streamPost: async () => {
-    //   if (get().eventSource) {
-    //     get().eventSource.close();
-    //   }
-
-    //     const eventSource = new EventSource(
-    //       import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/post/stream",
-    //       { withCredentials: true }
-    //     );
-
-    //     set({ eventSource });
-
-    //     eventSource.onmessage = (event) => {
-    //         try {
-    //       const data = JSON.parse(event.data);
-    //       console.log(data);
-    //       set(() => ({
-    //         posts: [...data],
-    //         isLoading: false,
-    //       }));
-    //     } catch (error: unknown | Error | AxiosError) {
-    //       if (error instanceof AxiosError) {
-    //         console.log(error);
-    //       } else {
-    //         console.log(error);
-    //       }
-    //     }
-    //     };
-    //     eventSource.onerror = (err) => {
-    //         console.log(err);
-    //       set({ isLoading: false });
-    //       setTimeout(() => useGetPosts.getState().streamPost(), 3000);
-    //     };
-    
-    //     return () => eventSource.close();
-    //   },
-    // closeEvent: () => {
-    //     const eventSource = get().eventSource;
-    //     if (eventSource) {
-    //     eventSource.close();
-    //     set({ eventSource: null });
-    //     }
-    // },
+    getFollowPosts: async () => {
+        try {
+            const response = await axios.get(import.meta.env.VITE_REACT_APP_BACKEND_URL + "/api/post/followPosts", {
+                withCredentials: true,
+            });
+            const result = response.data.posts;
+            const comments = response.data.comments;
+            set({ posts: result, comments: comments, follower: response.data.followers, following: response.data.following, isLoading: false });
+        } catch (error: unknown | Error | AxiosError) {
+            if (error instanceof AxiosError) {
+                console.log(error);
+            } else {
+                console.log(error);
+            }
+        }
+    },
+    setFollower: (data: any) => set((state: any) => ({ follower: [...state.follower, data] })),
+    setUnfollow: (data: any) => set((state: any) => ({ follower: state.follower.filter((follower: any) => !(follower.user_id === data.user_id && follower.following_id === data.following_id)) })),
     deletePost: async (data: any) => {
         set((state: any) => ({
             posts: state.posts.filter((post: any) => post.id !== data.postId),

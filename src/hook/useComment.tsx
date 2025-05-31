@@ -17,7 +17,7 @@ const upComment = async (postId: string | undefined, comment: string) => {
 const getComment = async (postid: string | undefined) => {
     try {
         const response = await axios.get(import.meta.env.VITE_REACT_APP_BACKEND_URL + `/api/post/comment/${postid}`, { withCredentials: true });
-        return { success: true, message: response.data.post };
+        return { success: true, message: response.data.post, comments: response.data.comments };
     } catch (error: unknown | Error | AxiosError) {
         if (error instanceof AxiosError) {
             return { success: false, message: error.response?.data.error || error.response?.data };

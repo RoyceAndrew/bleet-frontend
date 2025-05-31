@@ -12,7 +12,7 @@ interface Props {
     apiCall: any;
     open: any;
     setOpen: React.Dispatch<React.SetStateAction<boolean | string | null>>;
-    comment: boolean;
+    comment?: boolean;
 }
  
 export const PostInput = (props: Props) => {
@@ -28,6 +28,12 @@ export const PostInput = (props: Props) => {
 
   useEffect(() => {
     props.setOpen(props.open);
+    if (props.open) {
+      document.body.style.overflow = "hidden"; 
+    } else {
+      document.body.style.overflow = "auto";
+    } 
+    
   }, [props.open]);
  
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,7 +44,6 @@ export const PostInput = (props: Props) => {
     }
     if (typeof props.open === "object") {
       updateCommentList([{user_id: user.id, reply_to: props.open.id}, ...commentList]);
-      console.log([{user_id: user.id, reply_to: props.open.id}, ...commentList])
       const result = await props.apiCall(props.open.id, text);
       if (!result.success) {
         console.log(result.message);
@@ -69,13 +74,13 @@ export const PostInput = (props: Props) => {
       
       <div
         onClick={() => props.setOpen(false)}
-        className={`${props.open ? "block" : "hidden"} flex items-start justify-center z-50 fixed top-0 left-0 w-screen h-screen bg-[#FFFFFF50]`}
+        className={`${props.open ? "block" : "hidden"} flex items-start justify-center z-[9999] fixed top-0 left-0 w-screen h-screen bg-[#FFFFFF50]`}
       >
         
         <form
           onSubmit={submit}
           onClick={(e) => e.stopPropagation()}
-          className="w-[500px] bg-[#15202B] rounded-xl mt-[3%] flex flex-col"
+          className="md:w-[500px] md:h-fit h-full w-full z-[100] bg-[#15202B] md:rounded-xl md:mt-[3%] flex flex-col"
         >
           <i
             onClick={() => props.setOpen(false)}

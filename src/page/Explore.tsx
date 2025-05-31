@@ -4,8 +4,9 @@ import { useNavigate } from "react-router";
 import debounce from "lodash.debounce";
 import axios from "axios";
 
-export const Footer = () => {
-    const [data, setData] = useState([]);
+
+export const Explore = () => {
+     const [data, setData] = useState([]);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
@@ -56,12 +57,12 @@ export const Footer = () => {
     }, [search]);
 
     return (
-        <footer className="lg:flex flex-col hidden w-[250px] sticky top-0 h-screen ml-4 pt-4 bg-[#15202B] text-white">
-            <div className="fixed w-[250px]">
+        <footer className="flex flex-col w-full  px-2 pt-4 bg-[#15202B] text-white">
+            <div className="relative w-full max-w-[585px]">
             <input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search users" className="w-full  focus:outline-none ring-1 ring-slate-700 rounded-lg p-2 mb-2" />
-            <div className={`${results.length > 0 ? "block" : "hidden"} ring-1 bg-[#15202B] z-20 shadow-[0_0_10px] shadow-white ring-slate-700 rounded-lg`}>
+            <div className={`${results.length > 0 ? "block" : "hidden"} absolute top-full left-0 ring-1 w-full bg-[#15202B] z-20 shadow-[0_0_10px] shadow-white ring-slate-700 rounded-lg`}>
             {results.map((user: any) => (
-                <div key={user.id} onClick={() => handleClick(user.username)} className="p-2 z-10 flex gap-2 items-center cursor-pointer  hover:bg-slate-700">
+                <div key={user.id} onClick={() => handleClick(user.username)} className="p-2 z-10 flex items-center gap-2 cursor-pointer  hover:bg-slate-700">
                     <img src={user.profilePicture} className="w-[40px] h-[40px] rounded-full object-cover" />
                     <div>
                     <h4 className="text-lg break-words font-semibold">{user.displayname}</h4>
@@ -71,7 +72,7 @@ export const Footer = () => {
             ))}
             </div>
             </div>
-            <div className="ring-1 ring-slate-700 mt-14 rounded-lg">
+            <div className="ring-1 ring-slate-700 mt-2 rounded-lg">
                 <h2 className="text-2xl m-2 font-bold">Recent Posts</h2>
                 {loading ? <div className="flex justify-center w-full"><BeatLoader color="white" /></div> : data.map((post: any) => (
                     <div key={post.id} onClick={() => navigate(`/post/${post.id}`)} className="p-2 cursor-pointer hover:bg-slate-700">
