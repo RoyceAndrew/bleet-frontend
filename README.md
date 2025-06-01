@@ -1,50 +1,83 @@
-# React + TypeScript + Vite
+# Bleet Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🔗 Live Demo: https://bleet-frontend-4bk4.vercel.app  
+📂 Repo: https://github.com/RoyceAndrew/bleet-frontend
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Table of Contents
 
-## Expanding the ESLint configuration
+- [Overview](#overview)  
+- [Tech Stack](#tech-stack)  
+- [Features](#features)  
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+---
 
-- Configure the top-level `parserOptions` property like this:
+## Overview
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+Bleet Frontend is the React/TypeScript client application for the Bleet (Twitter clone) project. It implements:
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+- Authentication flows (Google OAuth via Supabase → custom backend JWT)  
+- Profile editing  
+- Creating, editing, deleting, liking, commenting, reporting, and following/unfollowing posts  
+- Real-time “Recent Posts” updates via Server-Sent Events (SSE)  
+- Global state management with Zustand  
+- Form handling & validation with Formik + Yup  
+- Tailwind CSS for styling  
+- Axios for HTTP requests  
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+---
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Tech Stack
+
+- **Framework & Libraries:**  
+  - React (TypeScript)  
+  - Formik & Yup (form state + validation)  
+  - Zustand (state management)  
+  - Tailwind CSS (utility-first styling)  
+  - Axios (HTTP client)  
+  - Server-Sent Events (native browser EventSource)  
+
+- **Build & Tooling:**  
+  - Vite (dev server & bundler)  
+  - PostCSS + Autoprefixer (via Tailwind)  
+  - ESLint + Prettier (linting & formatting)  
+
+---
+
+## Features
+
+1. **Authentication & Authorization**  
+   - Google OAuth via Supabase Auth → upon successful sign‐in, backend issues a custom JWT stored as an HttpOnly cookie.  
+   - Login & registration forms use Formik + Yup for schema validation.  
+
+2. **User Profile**  
+   - Edit profile (display name, bio, website).  
+   - Upload profile picture & banner (separate backend endpoints handle storage and URL).  
+
+3. **Posts & Feed**  
+   - Create, edit, delete posts (text + optional image).  
+   - Like, comment, report posts.  
+   - Follow/unfollow other users.  
+
+4. **Real-Time Updates**  
+   - SSE connection to `/api/post/sse/recent` shows new posts as they arrive in the navigation bar.  
+
+5. **State Management**  
+   - Zustand stores global slices for:  
+     - `authStore` (user session, token)  
+     - `postStore` (list of posts, actions for like/unlike, comment, report, delete)  
+     - `userStore` (current user data, followers/following)  
+
+6. **Forms & Validation**  
+   - Formik forms for login, registration, post creation/edit, profile editing.  
+   - Yup schemas enforce:  
+     - Valid email format  
+     - Password strength (min length, uppercase, lowercase, number, special character)  
+     - Display name length constraints  
+
+7. **Responsive Design**  
+   - Desktop-first layout using Tailwind CSS.  
+   - Mobile‐optimized breakpoints for all key pages (login, register, home feed, profile).  
+
+---
