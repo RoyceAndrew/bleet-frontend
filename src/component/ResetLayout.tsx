@@ -5,7 +5,7 @@ export const ResetLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <section
       id="forgotpass"
-      className="flex justify-center w-screen h-[h-[100dvh]]  bg-[#15202B]"
+      className="flex justify-center w-screen h-[100dvh]  bg-[#15202B]"
     >
       <ToastContainer
           position="top-center"
