@@ -23,6 +23,10 @@ export const useProfilePost = create((set) => ({
       set({ posts: [], isLoading: false });
     }
   },
+  editProfile: (data: any) =>
+    set((state: any) => ({
+      profileUser: { ...state.profileUser, ...data },
+    })),
   setFollower: (data: any) => set((state: any) => ({ follower: [...state.follower, data]  })),
   setUnfollow: (data: any) => set((state: any) => ({ follower: state.follower.filter((follower: any) => follower.user_id !== data.user_id)  })),
   setFollowing: (data: any) => set((state: any) => ({ following: [...state.following, data]  })),

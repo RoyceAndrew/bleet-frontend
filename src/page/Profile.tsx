@@ -26,6 +26,7 @@ export const Profile = () => {
   const {page} = useParams();
   const navigate = useNavigate();
   const { profile } = useParams();
+  const editProfile = useProfilePost((state: any) => state.editProfile);
   const user = useUser((state: any) => state.user);
   const profileUser = useProfilePost((state: any) => state.profileUser);
   const [edit, setEdit] = useState(false);
@@ -40,7 +41,7 @@ export const Profile = () => {
   const comment = useProfilePost((state: any) => state.comments);
   const [preview, setPreview] = useState(null);
   const [banner, setBanner] = useState(null);
-  const [cropBanner, setCropBanner] = useState<string | null>(null);
+  const [cropBanner, setCropBanner] = useState<string | null>(null);  
   const [previewBanner, setPreviewBanner] = useState(null);
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [followLoading, setFollowLoading] = useState(false);
@@ -79,6 +80,7 @@ export const Profile = () => {
       const result = await useEditProfile(values);
       if (result.success) {
         editUser(values);
+        editProfile(values);
         setOpen(!open);
       }
       setLoading(false);
@@ -126,15 +128,17 @@ export const Profile = () => {
   }, [page]);
 
   useEffect(() => {
-    if (user.website) {
+    if (profileUser.website) {
       if (
-        user.website.includes("https://") ||
-        user.website.includes("http://")
+        profileUser.website.includes("https://") ||
+        profileUser.website.includes("http://")
       ) {
-        setWebsite(user.website.split("//")[1]);
+        setWebsite(profileUser.website.split("//")[1]);
+      } else {
+        setWebsite(profileUser.website);
       }
     }
-  }, [user]);
+  }, [profileUser]);
 
   function handleClose() {
     setOpen(!open);
