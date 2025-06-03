@@ -326,15 +326,15 @@ const submitReport = async (e: React.FormEvent<HTMLFormElement>) => {
           />
           <ProfileHover className="mt-[60px] ml-[-80px]" animation={hoverProfile === post.id} user={post.user} profile={true} handleMouseHover={handleMouseHover} post={post}/>
           <div className={`${ props.isReply && post.id !== params ? "ml-[-26px] mb-[-12px] pl-[30px] border-l-2 border-slate-400" : "ml-[10px]"}  text-wrap whitespace-normal break-words w-full text-white flex flex-col`}>
-            <div className="flex justify-between w-full items-center">
-              <div className="flex w-full flex-nowrap">
+            <div className="flex justify-between w-full  items-center">
+              <div className="flex w-full max-w-[180px] sm:max-w-full min-w-0 flex-1 overflow-hidden flex-nowrap">
                 <p onClick={(e) => {e.stopPropagation(); navigate(`/${post.user.username}`)}} onMouseOver={() => handleMouseHover(post.id, "displayName")} onMouseLeave={() => handleMouseHover(null, "displayName")} className="hover:underline cursor-pointer truncate text-sm md:text-md lg:text-lg decoration-2">{post.user.displayname}</p>
                 <ProfileHover className="mt-[28px] ml-[-60px]" animation={hoverDisplayName === post.id} displayName={true} user={post.user} handleMouseHover={handleMouseHover} post={post}/>
-                <div className="flex-shrink min-w-0">
+                <div className="flex-shrink  min-w-0">
                 <p onClick={(e) => {e.stopPropagation(); navigate(`/${post.user.username}`)}} onMouseOver={() => handleMouseHover(post.id, "username")} onMouseLeave={() => handleMouseHover(null, "username")} className="text-slate-500 cursor-pointer   truncate text-sm md:text-md lg:text-lg ml-2">@{post.user.username}</p>
                 <ProfileHover className="ml-[-45px] mt-[3px]" animation={hoverUsername === post.id} username={true} user={post.user} handleMouseHover={handleMouseHover} post={post}/>
                 </div>
-                <i className="bi bi-dot text-slate-500"></i>
+                <i className="bi bi-dot flex-shrink-0 text-slate-500"></i>
                 <p className="text-slate-500 text-sm md:text-md lg:text-lg  flex-shrink-0">{date(post.created_at)}</p>
               </div>
               <i
